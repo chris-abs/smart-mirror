@@ -1,0 +1,13 @@
+{
+  "private": true,
+  "name": "smart-mirror",
+  "version": "1.0.0",
+  "scripts": {
+    "start:client": "yarn --cwd client start",
+    "start:api": "yarn --cwd api start",
+    "start": "concurrently \"yarn start:api\" \"yarn start:client\""
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.0"
+  }
+}
