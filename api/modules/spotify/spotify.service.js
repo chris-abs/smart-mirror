@@ -162,17 +162,38 @@ async function spotifyFetch(path, options = {}) {
     },
   });
 
-  if (res.status === 204) {
+  const contentType = res.headers.get("content-type") || "";
+
+  if (res.status === 204 || contentType === "") {
+    if (!res.ok) {
+      const err = new Error(`Spotify API error ${res.status}`);
+      err.status = res.status;
+      err.body = null;
+      throw err;
+    }
     return null;
   }
 
+  const text = await res.text();
+
   if (!res.ok) {
-    const text = await res.text();
     console.error("[Spotify] API error:", res.status, text);
-    throw new Error(`Spotify API error ${res.status}`);
+    const err = new Error(`Spotify API error ${res.status}`);
+    err.status = res.status;
+    err.body = text;
+    throw err;
   }
 
-  return res.json();
+  if (!contentType.toLowerCase().includes("application/json")) {
+    return text || null;
+  }
+
+  try {
+    return JSON.parse(text);
+  } catch (e) {
+    console.error("[Spotify] JSON parse error:", e, "Body:", text);
+    throw new Error("Spotify returned invalid JSON");
+  }
 }
 
 export async function getCurrentlyPlaying() {
