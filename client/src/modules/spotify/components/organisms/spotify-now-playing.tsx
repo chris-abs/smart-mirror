@@ -1,16 +1,36 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { IconButton } from "../../../../components/atoms/icon-button";
+import { Slider } from "../../../../components/atoms/slider";
 import {
   spotifyNext,
   spotifyPause,
   spotifyPlay,
   spotifyPrevious,
+  spotifySetVolume,
   useSpotifyNowPlaying,
 } from "../../queries";
 
 export function SpotifyNowPlayingCard() {
-  const [volume, setVolume] = useState(65);
+  const [volume, setVolume] = useState(50);
+  const volumeUpdateTimeout = useRef<ReturnType<typeof setTimeout> | null>(
+    null,
+  );
   const { data, isLoading, error } = useSpotifyNowPlaying(5000);
+  const deviceVolume = data?.volumePercent;
+
+  useEffect(() => {
+    if (typeof deviceVolume === "number") {
+      setVolume(deviceVolume);
+    }
+  }, [deviceVolume]);
+
+  useEffect(() => {
+    return () => {
+      if (volumeUpdateTimeout.current) {
+        clearTimeout(volumeUpdateTimeout.current);
+      }
+    };
+  }, []);
 
   if (isLoading && !data) {
     return (
@@ -84,6 +104,24 @@ export function SpotifyNowPlayingCard() {
     }
   }
 
+  function scheduleVolumeUpdate(next: number) {
+    setVolume(next);
+
+    if (volumeUpdateTimeout.current) {
+      clearTimeout(volumeUpdateTimeout.current);
+    }
+
+    volumeUpdateTimeout.current = setTimeout(async () => {
+      try {
+        await spotifySetVolume(next);
+      } catch (e) {
+        console.error("Spotify volume change failed", e);
+      } finally {
+        volumeUpdateTimeout.current = null;
+      }
+    }, 200);
+  }
+
   return (
     <div className="rounded-xl border border-white/10 p-4 bg-white/5">
       <div className="text-xs uppercase tracking-[0.2em] opacity-60 mb-3">
@@ -119,13 +157,14 @@ export function SpotifyNowPlayingCard() {
             <div className="text-xs uppercase tracking-[0.2em] opacity-60 mb-1">
               Volume
             </div>
-            <input
-              type="range"
+            <Slider
               min={0}
               max={100}
               value={volume}
-              onChange={(event) => setVolume(Number(event.target.value))}
-              className="w-full accent-white"
+              onChange={(event) =>
+                scheduleVolumeUpdate(Number(event.target.value))
+              }
+              aria-label="Volume"
             />
             <div className="text-[11px] opacity-60 text-right mt-1">
               {volume}%

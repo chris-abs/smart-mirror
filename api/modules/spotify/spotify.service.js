@@ -209,6 +209,7 @@ export async function getCurrentlyPlaying() {
       durationMs: 0,
       isPlaying: false,
       deviceName: null,
+      volumePercent: null,
     };
   }
 
@@ -221,6 +222,10 @@ export async function getCurrentlyPlaying() {
     durationMs: data.item.duration_ms || 0,
     isPlaying: !!data.is_playing,
     deviceName: data.device?.name || null,
+    volumePercent:
+      typeof data.device?.volume_percent === "number"
+        ? data.device.volume_percent
+        : null,
   };
 }
 
