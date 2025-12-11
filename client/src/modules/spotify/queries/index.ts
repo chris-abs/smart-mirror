@@ -29,3 +29,9 @@ export function spotifyNext() {
 export function spotifyPrevious() {
   return apiPost<{ ok: boolean }>("/api/spotify/previous");
 }
+
+export function spotifySetVolume(volume: number) {
+  return apiPost<{ ok: boolean; volume: number }>("/api/spotify/volume", {
+    volume,
+  });
+}

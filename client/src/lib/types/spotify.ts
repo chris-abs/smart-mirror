@@ -7,4 +7,5 @@ export type NowPlaying = {
   durationMs: number;
   isPlaying: boolean;
   deviceName: string | null;
+  volumePercent: number | null;
 };
