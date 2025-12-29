@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { Skeleton } from "@/components/ui/skeleton";
 import { useCurrentWeather } from "../../queries";
 import type { WeatherQueryParams } from "../../../../lib/types/weather";
 
@@ -32,15 +33,32 @@ export function WeatherCard() {
 
   if (isLoading && !data) {
     return (
-      <div className="rounded-xl border border-white/10 p-4 bg-white/5">
+      <div className="rounded-xl border border-white/10 p-4 bg-white/5 min-h-[200px]">
         <div className="text-xs uppercase tracking-[0.2em] opacity-60 mb-3">
           Weather
         </div>
-        <div className="flex items-center gap-3">
-          <div className="w-16 h-16 bg-white/10 rounded animate-pulse" />
-          <div className="flex flex-col gap-2">
-            <div className="h-8 w-20 bg-white/10 rounded animate-pulse" />
-            <div className="h-4 w-32 bg-white/10 rounded animate-pulse" />
+        <div className="flex flex-col gap-3">
+          <div className="flex items-start justify-between">
+            <div>
+              <Skeleton className="h-9 w-16 mb-1" />
+              <Skeleton className="h-4 w-24" />
+            </div>
+            <Skeleton className="w-16 h-16 shrink-0" />
+          </div>
+          <Skeleton className="h-3 w-32" />
+          <div className="flex items-center gap-4 pt-2 border-t border-white/10">
+            <div>
+              <Skeleton className="h-3 w-16 mb-0.5" />
+              <Skeleton className="h-4 w-12" />
+            </div>
+            <div>
+              <Skeleton className="h-3 w-16 mb-0.5" />
+              <Skeleton className="h-4 w-12" />
+            </div>
+            <div>
+              <Skeleton className="h-3 w-12 mb-0.5" />
+              <Skeleton className="h-4 w-12" />
+            </div>
           </div>
         </div>
       </div>
@@ -72,7 +90,7 @@ export function WeatherCard() {
   }
 
   return (
-    <div className="rounded-xl border border-white/10 p-4 bg-white/5">
+    <div className="rounded-xl border border-white/10 p-4 bg-white/5 min-h-[200px]">
       <div className="text-xs uppercase tracking-[0.2em] opacity-60 mb-3">
         Weather
       </div>
