@@ -3,10 +3,10 @@ import { useCurrentWeather } from "../../queries";
 import type { WeatherQueryParams } from "../../../../lib/types/weather";
 
 export function WeatherCard() {
-  const [locationParams, setLocationParams] = useState<WeatherQueryParams>({
-    type: "city",
-    city: "London",
-  });
+  const [locationParams, setLocationParams] = useState<WeatherQueryParams | null>(
+    "geolocation" in navigator ? null : { type: "city", city: "London" }
+  );
+
   useEffect(() => {
     if ("geolocation" in navigator) {
       navigator.geolocation.getCurrentPosition(
@@ -19,6 +19,10 @@ export function WeatherCard() {
         },
         (error) => {
           console.error("Geolocation error:", error);
+          setLocationParams({
+            type: "city",
+            city: "London",
+          });
         }
       );
     }
