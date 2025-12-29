@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { useQueryClient } from "@tanstack/react-query";
 import { SkipBack, Play, Pause, SkipForward } from "lucide-react";
 import { IconButton } from "../../../../components/atoms/icon-button";
 import { Slider } from "../../../../components/atoms/slider";
@@ -8,6 +9,7 @@ import {
   spotifyPlay,
   spotifyPrevious,
   spotifySetVolume,
+  spotifyNowPlayingKey,
   useSpotifyNowPlaying,
 } from "../../queries";
 
@@ -16,7 +18,8 @@ export function SpotifyNowPlayingCard() {
   const volumeUpdateTimeout = useRef<ReturnType<typeof setTimeout> | null>(
     null,
   );
-  const { data, isLoading, error } = useSpotifyNowPlaying(5000);
+  const queryClient = useQueryClient();
+  const { data, isLoading, error } = useSpotifyNowPlaying();
   const deviceVolume = data?.volumePercent;
 
   useEffect(() => {
@@ -84,6 +87,8 @@ export function SpotifyNowPlayingCard() {
       } else {
         await spotifyPlay();
       }
+      // Immediately refetch to get updated state
+      await queryClient.invalidateQueries({ queryKey: spotifyNowPlayingKey });
     } catch (e) {
       console.error("Spotify play/pause failed", e);
     }
@@ -92,6 +97,8 @@ export function SpotifyNowPlayingCard() {
   async function handleNext() {
     try {
       await spotifyNext();
+      // Immediately refetch to get updated state
+      await queryClient.invalidateQueries({ queryKey: spotifyNowPlayingKey });
     } catch (e) {
       console.error("Spotify next failed", e);
     }
@@ -100,6 +107,8 @@ export function SpotifyNowPlayingCard() {
   async function handlePrevious() {
     try {
       await spotifyPrevious();
+      // Immediately refetch to get updated state
+      await queryClient.invalidateQueries({ queryKey: spotifyNowPlayingKey });
     } catch (e) {
       console.error("Spotify previous failed", e);
     }

@@ -4,13 +4,21 @@ import type { NowPlaying } from "../../../lib/types/spotify";
 
 export const spotifyNowPlayingKey = ["spotify", "now-playing"] as const;
 
-export function useSpotifyNowPlaying(pollIntervalMs = 5000) {
+export function useSpotifyNowPlaying() {
   return useQuery<NowPlaying>({
     queryKey: spotifyNowPlayingKey,
     queryFn: () => apiGet<NowPlaying>("/api/spotify/now-playing"),
-    refetchInterval: pollIntervalMs,
+    refetchInterval: (query) => {
+      const data = query.state.data;
+      // If playing, poll every 2 seconds to update progress bar
+      // If paused or nothing playing, poll every 10 seconds
+      if (data?.isPlaying) {
+        return 2000;
+      }
+      return 10000;
+    },
     refetchOnWindowFocus: false,
-    staleTime: pollIntervalMs,
+    staleTime: 1000,
   });
 }
 
