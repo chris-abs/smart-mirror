@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { SkipBack, Play, Pause, SkipForward } from "lucide-react";
 import { IconButton } from "../../../../components/atoms/icon-button";
 import { Slider } from "../../../../components/atoms/slider";
 import {
@@ -177,17 +178,32 @@ export function SpotifyNowPlayingCard() {
                 On {track.deviceName}
               </div>
             )}
-            <div className="flex gap-2">
+            <div className="flex items-center gap-3">
               <IconButton
-                className="size-12 rounded-full bg-pink-500"
                 onClick={handlePrevious}
+                className="size-10 rounded-full border-white/30 bg-white/5 hover:bg-white/10 hover:border-white/40 transition-colors"
+                aria-label="Previous track"
               >
-                ⏮
+                <SkipBack className="size-4" />
               </IconButton>
-              <IconButton onClick={handleTogglePlay}>
-                {track.isPlaying ? "⏸" : "▶️"}
+              <IconButton
+                onClick={handleTogglePlay}
+                className="size-12 rounded-full border-white/40 bg-white/10 hover:bg-white/15 hover:border-white/50 transition-colors"
+                aria-label={track.isPlaying ? "Pause" : "Play"}
+              >
+                {track.isPlaying ? (
+                  <Pause className="size-5" />
+                ) : (
+                  <Play className="size-5 ml-0.5" />
+                )}
               </IconButton>
-              <IconButton onClick={handleNext}>⏭</IconButton>
+              <IconButton
+                onClick={handleNext}
+                className="size-10 rounded-full border-white/30 bg-white/5 hover:bg-white/10 hover:border-white/40 transition-colors"
+                aria-label="Next track"
+              >
+                <SkipForward className="size-4" />
+              </IconButton>
             </div>
           </div>
         </div>

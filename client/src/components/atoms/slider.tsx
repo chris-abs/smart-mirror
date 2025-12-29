@@ -44,18 +44,18 @@ export function Slider({
     <div
       data-slot="slider"
       className={cn(
-        "relative flex w-full items-center select-none",
+        "relative flex w-full items-center select-none h-4",
         "data-[disabled=true]:opacity-50",
         className
       )}
     >
       <div
         data-slot="slider-track"
-        className="pointer-events-none absolute inset-x-0 h-1.5 rounded-full bg-white/10"
+        className="pointer-events-none absolute inset-x-0 top-1/2 -translate-y-1/2 h-1.5 rounded-full bg-white/10"
       />
       <div
         data-slot="slider-range"
-        className="pointer-events-none absolute h-1.5 rounded-full bg-white/80"
+        className="pointer-events-none absolute top-1/2 -translate-y-1/2 h-1.5 rounded-full bg-white/80"
         style={{ width: `${percentage}%` }}
       />
       <input
@@ -67,7 +67,7 @@ export function Slider({
         onChange={handleChange}
         data-slot="slider-thumb"
         className={cn(
-          "relative z-10 w-full cursor-pointer appearance-none bg-transparent",
+          "relative z-10 w-full cursor-pointer appearance-none bg-transparent h-4",
           "focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50",
           "[&::-webkit-slider-runnable-track]:h-1.5 [&::-webkit-slider-runnable-track]:bg-transparent [&::-webkit-slider-runnable-track]:rounded-full",
           "[&::-moz-range-track]:h-1.5 [&::-moz-range-track]:bg-transparent [&::-moz-range-track]:rounded-full",
@@ -79,10 +79,18 @@ export function Slider({
           "[&::-webkit-slider-thumb]:bg-black",
           "[&::-webkit-slider-thumb]:shadow-sm",
           "[&::-webkit-slider-thumb]:transition-[box-shadow,transform]",
+          "[&::-webkit-slider-thumb]:-mt-[5px]",
           "hover:[&::-webkit-slider-thumb]:ring-4",
           "hover:[&::-webkit-slider-thumb]:ring-white/30",
           "focus-visible:[&::-webkit-slider-thumb]:ring-4",
-          "focus-visible:[&::-webkit-slider-thumb]:ring-white/30"
+          "focus-visible:[&::-webkit-slider-thumb]:ring-white/30",
+          "[&::-moz-range-thumb]:size-4",
+          "[&::-moz-range-thumb]:rounded-full",
+          "[&::-moz-range-thumb]:border",
+          "[&::-moz-range-thumb]:border-white/70",
+          "[&::-moz-range-thumb]:bg-black",
+          "[&::-moz-range-thumb]:shadow-sm",
+          "[&::-moz-range-thumb]:cursor-pointer"
         )}
         {...props}
       />
