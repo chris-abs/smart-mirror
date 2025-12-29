@@ -4,11 +4,7 @@ type IconButtonProps = PropsWithChildren<
   ButtonHTMLAttributes<HTMLButtonElement>
 >;
 
-export function IconButton({
-  children,
-  className = "",
-  ...rest
-}: IconButtonProps) {
+export function IconButton({ children, className, ...rest }: IconButtonProps) {
   return (
     <button
       className={

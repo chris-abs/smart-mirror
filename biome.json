@@ -1,12 +1,18 @@
 {
+  "files": {
+    "ignore": [
+      "**/node_modules/**",
+      "**/dist/**",
+      "**/build/**",
+      "**/*.css",
+      "**/*.css.map"
+    ]
+  },
   "formatter": {
     "indentStyle": "space",
     "indentWidth": 2
   },
   "linter": {
-    "enabled": true,
-    "rules": {
-      "style": {}
-    }
+    "enabled": true
   }
 }

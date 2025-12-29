@@ -178,7 +178,12 @@ export function SpotifyNowPlayingCard() {
               </div>
             )}
             <div className="flex gap-2">
-              <IconButton onClick={handlePrevious}>⏮</IconButton>
+              <IconButton
+                className="size-12 rounded-full bg-pink-500"
+                onClick={handlePrevious}
+              >
+                ⏮
+              </IconButton>
               <IconButton onClick={handleTogglePlay}>
                 {track.isPlaying ? "⏸" : "▶️"}
               </IconButton>
