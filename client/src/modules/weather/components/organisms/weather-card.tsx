@@ -29,14 +29,19 @@ export function WeatherCard() {
   if (isLoading && !data) {
     return (
       <div className="rounded-xl border border-white/10 p-4 bg-white/5">
-        <div className="text-xs uppercase tracking-[0.2em] opacity-60 mb-2">
+        <div className="text-xs uppercase tracking-[0.2em] opacity-60 mb-3">
           Weather
         </div>
-        <div className="text-sm opacity-60">Loading weather…</div>
+        <div className="flex items-center gap-3">
+          <div className="w-16 h-16 bg-white/10 rounded animate-pulse" />
+          <div className="flex flex-col gap-2">
+            <div className="h-8 w-20 bg-white/10 rounded animate-pulse" />
+            <div className="h-4 w-32 bg-white/10 rounded animate-pulse" />
+          </div>
+        </div>
       </div>
     );
   }
-
 
   if (error && !data) {
     return (
@@ -91,24 +96,18 @@ export function WeatherCard() {
           {data.location.country && `, ${data.location.country}`}
         </div>
 
-        <div className="grid grid-cols-2 gap-2 text-xs opacity-80">
+        <div className="flex items-center gap-4 text-xs opacity-80 pt-2 border-t border-white/10">
           <div>
             <span className="opacity-60">Feels like</span>
-            <div className="font-medium">{data.feelsLike}°</div>
+            <div className="font-medium mt-0.5">{data.feelsLike}°</div>
           </div>
           <div>
             <span className="opacity-60">Humidity</span>
-            <div className="font-medium">{data.humidity}%</div>
+            <div className="font-medium mt-0.5">{data.humidity}%</div>
           </div>
-          {data.visibility !== null && (
-            <div>
-              <span className="opacity-60">Visibility</span>
-              <div className="font-medium">{data.visibility} km</div>
-            </div>
-          )}
           <div>
             <span className="opacity-60">Wind</span>
-            <div className="font-medium">{data.windSpeed.toFixed(1)} m/s</div>
+            <div className="font-medium mt-0.5">{data.windSpeed.toFixed(1)} m/s</div>
           </div>
         </div>
       </div>
