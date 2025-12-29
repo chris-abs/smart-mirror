@@ -22,16 +22,10 @@ function buildWeatherUrl(params: WeatherQueryParams): string {
   return `/api/weather/current?city=${cityParam}${countryParam}`;
 }
 
-export function useCurrentWeather(params: WeatherQueryParams | null) {
+export function useCurrentWeather(params: WeatherQueryParams) {
   return useQuery<CurrentWeather>({
-    queryKey: params ? buildWeatherQueryKey(params) : [...weatherKey, "none"],
-    queryFn: () => {
-      if (!params) {
-        throw new Error("Weather query params are required");
-      }
-      return apiGet<CurrentWeather>(buildWeatherUrl(params));
-    },
-    enabled: params !== null,
+    queryKey: buildWeatherQueryKey(params),
+    queryFn: () => apiGet<CurrentWeather>(buildWeatherUrl(params)),
     refetchInterval: 5 * 60 * 1000, 
     refetchOnWindowFocus: false,
     staleTime: 2 * 60 * 1000,
