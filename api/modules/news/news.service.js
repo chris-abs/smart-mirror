@@ -53,7 +53,6 @@ export async function getUFCNews(pageSize = 10) {
     throw new Error("News API key is not configured");
   }
 
-  // Filter by language=en to exclude non-English articles (e.g., Russian)
   const url = `${BASE_URL}/everything?q=UFC&sortBy=publishedAt&language=en&pageSize=${pageSize}&apiKey=${API_KEY}`;
 
   try {

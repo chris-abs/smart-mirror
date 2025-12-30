@@ -1,14 +1,25 @@
 import { SpotifyNowPlayingCard } from "../../modules/spotify/components/organisms/spotify-now-playing";
 import { WeatherCard } from "../../modules/weather/components/organisms/weather-card";
 import { NewsCard } from "../../modules/news/components/organisms/news-card";
+import { getGreeting } from "../../lib/utils";
+
+const USER_NAME = "Chris";
 
 export function Canvas() {
   const now = new Date();
+  const greeting = getGreeting();
 
   return (
     <div className="w-screen h-screen bg-black text-white flex flex-col">
       <header className="flex justify-between items-start px-8 py-6">
-        <div className="text-lg font-semibold">Jarvis Mirror</div>
+        <div>
+          <div className="text-xl font-medium opacity-80 mb-1">
+            {greeting},
+          </div>
+          <div className="text-4xl font-bold leading-tight tracking-tight">
+            {USER_NAME}!
+          </div>
+        </div>
         <div className="text-right">
           <div className="text-5xl font-light leading-none">
             {now.toLocaleTimeString([], {

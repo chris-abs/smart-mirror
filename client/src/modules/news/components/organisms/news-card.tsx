@@ -67,7 +67,7 @@ export function NewsCard() {
           News
         </div>
         <div className="flex flex-col gap-2 min-h-[120px]">
-          <Skeleton className="h-10 w-full mb-2" />
+          <Skeleton className="h-14 w-full mb-2" />
           <Skeleton className="h-10 w-full" />
           <Skeleton className="h-4 w-3/4 mt-2" />
         </div>
@@ -103,7 +103,7 @@ export function NewsCard() {
       </div>
 
       <div className="space-y-2 min-h-[120px]">
-        <h3 className="text-base font-medium leading-tight line-clamp-2">
+        <h3 className="text-2xl font-bold leading-tight line-clamp-2 tracking-tight">
           {currentArticle.title}
         </h3>
         <div className="min-h-10">
