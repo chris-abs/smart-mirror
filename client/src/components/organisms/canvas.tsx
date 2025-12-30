@@ -32,14 +32,6 @@ export function Canvas() {
           </section>
 
           <section className="h-full">
-            <div className="border border-white/10 rounded-xl p-4 bg-white/5 h-full">
-              <div className="text-xs uppercase tracking-[0.2em] opacity-60 mb-2">
-                News
-              </div>
-              <div className="text-sm opacity-60">
-                Placeholder for news / UFC / events…
-              </div>
-            </div>
           </section>
 
           <section className="h-full">
@@ -47,13 +39,15 @@ export function Canvas() {
           </section>
         </div>
 
-        <div className="mt-auto pt-6">
-          <div className="border border-white/10 rounded-xl p-4 bg-white/5">
-            <div className="text-xs uppercase tracking-[0.2em] opacity-60 mb-2">
-              Bottom Row
-            </div>
-            <div className="text-sm opacity-60">
-              Placeholder for bottom row content…
+        <div className="mt-auto pt-6 w-full">
+          <div className="border border-white/10 rounded-xl p-4 bg-white/5 w-full flex justify-center">
+            <div>
+              <div className="text-xs uppercase tracking-[0.2em] opacity-60 mb-2">
+                News
+              </div>
+              <div className="text-sm opacity-60">
+                Placeholder for news / UFC / events…
+              </div>
             </div>
           </div>
         </div>
