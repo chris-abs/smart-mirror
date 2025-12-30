@@ -25,12 +25,12 @@ export function Canvas() {
         </div>
       </header>
 
-      <main className="flex-1 px-8 pb-8 grid grid-cols-3 gap-6">
-        <section className="col-span-1">
+      <main className="flex-1 px-8 pb-8 grid gap-6" style={{ gridTemplateColumns: 'minmax(0, 400px) 1fr minmax(0, 400px)' }}>
+        <section>
           <SpotifyNowPlayingCard />
         </section>
 
-        <section className="col-span-1">
+        <section>
           <div className="border border-white/10 rounded-xl p-4 bg-white/5">
             <div className="text-xs uppercase tracking-[0.2em] opacity-60 mb-2">
               News
@@ -41,7 +41,7 @@ export function Canvas() {
           </div>
         </section>
 
-        <section className="col-span-1">
+        <section>
           <WeatherCard />
         </section>
       </main>
