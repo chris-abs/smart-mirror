@@ -1,37 +1,30 @@
-import { useEffect, useState } from "react";
+import { useMemo } from "react";
+
 import { Skeleton } from "@/components/ui/skeleton";
 import { useCurrentWeather } from "../../queries";
+import { useLocation, getDefaultWeatherLocation } from "../../../../hooks/use-location";
 import type { WeatherQueryParams } from "../../../../lib/types/weather";
 
 export function WeatherCard() {
-  const [locationParams, setLocationParams] = useState<WeatherQueryParams | null>(
-    "geolocation" in navigator ? null : { type: "city", city: "London" }
-  );
+  const { coordinates, isLoading: locationLoading } = useLocation();
 
-  useEffect(() => {
-    if ("geolocation" in navigator) {
-      navigator.geolocation.getCurrentPosition(
-        (position) => {
-          setLocationParams({
-            type: "coordinates",
-            lat: position.coords.latitude,
-            lon: position.coords.longitude,
-          });
-        },
-        (error) => {
-          console.error("Geolocation error:", error);
-          setLocationParams({
-            type: "city",
-            city: "London",
-          });
-        }
-      );
+  const locationParams = useMemo<WeatherQueryParams | null>(() => {
+    if (locationLoading) return null;
+    
+    if (coordinates) {
+      return {
+        type: "coordinates",
+        lat: coordinates.lat,
+        lon: coordinates.lon,
+      };
     }
-  }, []);
+    
+    return getDefaultWeatherLocation();
+  }, [coordinates, locationLoading]);
 
   const { data, isLoading, error } = useCurrentWeather(locationParams);
 
-  if (isLoading && !data) {
+  if ((locationLoading || isLoading) && !data) {
     return (
       <div className="rounded-xl border border-white/10 p-4 bg-white/5 min-h-[200px]">
         <div className="text-xs uppercase tracking-[0.2em] opacity-60 mb-3">

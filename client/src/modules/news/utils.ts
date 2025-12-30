@@ -1,15 +1,3 @@
-/**
- * Get country code from location
- * Defaults to 'gb' for UK
- * Can be enhanced to use geolocation API
- */
-export function getCountryCodeFromLocation(): string {
-  return "gb";
-}
-
-/**
- * Format a date as a relative time string (e.g., "2h ago", "3d ago")
- */
 export function getTimeAgo(date: Date): string {
   const now = new Date();
   const diffMs = now.getTime() - date.getTime();

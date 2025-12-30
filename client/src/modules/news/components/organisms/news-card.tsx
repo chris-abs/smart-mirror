@@ -2,13 +2,15 @@ import { useEffect, useState, useRef, useMemo } from "react";
 
 import { Skeleton } from "@/components/ui/skeleton";
 import { useBreakingNews, useUFCNews } from "../../queries";
-import { getCountryCodeFromLocation, getTimeAgo } from "../../utils";
+import { getTimeAgo } from "../../utils";
+import { useLocation } from "../../../../hooks/use-location";
 
 const SCROLL_INTERVAL = 10000; 
 
 export function NewsCard() {
-  const countryCode = getCountryCodeFromLocation();
-  const { data: breakingNews, isLoading: breakingLoading } = useBreakingNews(countryCode, 10);
+  const { countryCode, isLoading: locationLoading } = useLocation();
+  const countryCodeString = countryCode || "gb";
+  const { data: breakingNews, isLoading: breakingLoading } = useBreakingNews(countryCodeString, 10);
   const { data: ufcNews, isLoading: ufcLoading } = useUFCNews(10);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [currentType, setCurrentType] = useState<"breaking" | "ufc">("breaking");
@@ -21,7 +23,7 @@ export function NewsCard() {
     ];
   }, [breakingNews?.articles, ufcNews?.articles]);
 
-  const isLoading = breakingLoading || ufcLoading;
+  const isLoading = locationLoading || breakingLoading || ufcLoading;
   const hasData = allArticles.length > 0;
 
   const dataKey = useMemo(() => {
@@ -101,7 +103,7 @@ export function NewsCard() {
       </div>
 
       <div className="space-y-2 min-h-[120px]">
-        <h3 className="text-base font-medium leading-tight line-clamp-2 min-h-10">
+        <h3 className="text-base font-medium leading-tight line-clamp-2">
           {currentArticle.title}
         </h3>
         <div className="min-h-10">
