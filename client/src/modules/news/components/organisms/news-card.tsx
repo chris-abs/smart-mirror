@@ -117,13 +117,13 @@ export function NewsCard() {
             </p>
           )}
         </div>
+      </div>
         <div className="flex items-center justify-between text-xs opacity-50 pt-1">
           <span>{currentArticle.source.name}</span>
           {timeAgo && <span>{timeAgo}</span>}
         </div>
-      </div>
 
-      <div className="mt-3 h-0.5 bg-white/10 rounded-full overflow-hidden">
+      <div className="mt-2 h-0.5 bg-white/10 rounded-full overflow-hidden">
         <div
           className="h-full bg-white/30 transition-all duration-300 ease-linear"
           style={{
