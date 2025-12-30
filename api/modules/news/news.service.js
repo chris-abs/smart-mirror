@@ -53,7 +53,8 @@ export async function getUFCNews(pageSize = 10) {
     throw new Error("News API key is not configured");
   }
 
-  const url = `${BASE_URL}/everything?q=UFC&sortBy=publishedAt&pageSize=${pageSize}&apiKey=${API_KEY}`;
+  // Filter by language=en to exclude non-English articles (e.g., Russian)
+  const url = `${BASE_URL}/everything?q=UFC&sortBy=publishedAt&language=en&pageSize=${pageSize}&apiKey=${API_KEY}`;
 
   try {
     const res = await fetch(url);

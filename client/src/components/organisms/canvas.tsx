@@ -1,5 +1,6 @@
 import { SpotifyNowPlayingCard } from "../../modules/spotify/components/organisms/spotify-now-playing";
 import { WeatherCard } from "../../modules/weather/components/organisms/weather-card";
+import { NewsCard } from "../../modules/news/components/organisms/news-card";
 
 export function Canvas() {
   const now = new Date();
@@ -40,16 +41,7 @@ export function Canvas() {
         </div>
 
         <div className="mt-auto pt-6 w-full">
-          <div className="border border-white/10 rounded-xl p-4 bg-white/5 w-full">
-          <div className="flex flex-col items-center justify-center">
-              <div className="text-xs uppercase tracking-[0.2em] opacity-60 mb-2">
-                News
-              </div>
-              <div className="text-sm opacity-60">
-                Placeholder for news / UFC / events…
-            </div>
-          </div>
-          </div>
+          <NewsCard />
         </div>
       </main>
     </div>
