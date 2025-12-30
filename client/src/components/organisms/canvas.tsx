@@ -25,25 +25,38 @@ export function Canvas() {
         </div>
       </header>
 
-      <main className="flex-1 px-8 pb-8 grid gap-6" style={{ gridTemplateColumns: 'minmax(0, 400px) 1fr minmax(0, 400px)' }}>
-        <section>
-          <SpotifyNowPlayingCard />
-        </section>
+      <main className="flex-1 px-8 pb-8 flex flex-col min-h-0">
+        <div className="flex-1 grid gap-6 min-h-0" style={{ gridTemplateColumns: 'minmax(0, 400px) 1fr minmax(0, 400px)' }}>
+          <section className="h-full">
+            <SpotifyNowPlayingCard />
+          </section>
 
-        <section>
+          <section className="h-full">
+            <div className="border border-white/10 rounded-xl p-4 bg-white/5 h-full">
+              <div className="text-xs uppercase tracking-[0.2em] opacity-60 mb-2">
+                News
+              </div>
+              <div className="text-sm opacity-60">
+                Placeholder for news / UFC / events…
+              </div>
+            </div>
+          </section>
+
+          <section className="h-full">
+            <WeatherCard />
+          </section>
+        </div>
+
+        <div className="mt-auto pt-6">
           <div className="border border-white/10 rounded-xl p-4 bg-white/5">
             <div className="text-xs uppercase tracking-[0.2em] opacity-60 mb-2">
-              News
+              Bottom Row
             </div>
             <div className="text-sm opacity-60">
-              Placeholder for news / UFC / events…
+              Placeholder for bottom row content…
             </div>
           </div>
-        </section>
-
-        <section>
-          <WeatherCard />
-        </section>
+        </div>
       </main>
     </div>
   );
