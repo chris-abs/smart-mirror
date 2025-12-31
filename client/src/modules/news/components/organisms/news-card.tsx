@@ -14,7 +14,9 @@ export function NewsCard() {
   const { data: ufcNews, isLoading: ufcLoading } = useUFCNews(10);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [currentType, setCurrentType] = useState<"breaking" | "ufc">("breaking");
+  const [progress, setProgress] = useState(0);
   const prevDataKeyRef = useRef<string>("");
+  const progressIntervalRef = useRef<number | null>(null);
 
   const allArticles = useMemo(() => {
     const combined = [
@@ -36,6 +38,7 @@ export function NewsCard() {
       prevDataKeyRef.current = dataKey;
       const timeoutId = setTimeout(() => {
         setCurrentIndex(0);
+        setProgress(0);
         if (allArticles[0]) {
           setCurrentType(allArticles[0].type);
         }
@@ -47,7 +50,36 @@ export function NewsCard() {
   useEffect(() => {
     if (!hasData || allArticles.length === 0) return;
 
-    const interval = setInterval(() => {
+    const resetTimeout = setTimeout(() => {
+      setProgress(0);
+    }, 0);
+
+    const startTime = Date.now();
+    const updateProgress = () => {
+      const elapsed = Date.now() - startTime;
+      const newProgress = Math.min(elapsed / SCROLL_INTERVAL, 1);
+      setProgress(newProgress);
+
+      if (newProgress < 1) {
+        progressIntervalRef.current = window.setTimeout(updateProgress, 16);
+      }
+    };
+
+    const animationTimeout = window.setTimeout(updateProgress, 16);
+
+    return () => {
+      clearTimeout(resetTimeout);
+      if (progressIntervalRef.current) {
+        clearTimeout(progressIntervalRef.current);
+      }
+      clearTimeout(animationTimeout);
+    };
+  }, [hasData, allArticles.length, currentIndex]);
+
+  useEffect(() => {
+    if (!hasData || allArticles.length === 0 || progress < 1) return;
+
+    const timeoutId = setTimeout(() => {
       setCurrentIndex((prev) => {
         const nextIndex = (prev + 1) % allArticles.length;
         const nextArticle = allArticles[nextIndex];
@@ -56,10 +88,10 @@ export function NewsCard() {
         }
         return nextIndex;
       });
-    }, SCROLL_INTERVAL);
+    }, 100); 
 
-    return () => clearInterval(interval);
-  }, [hasData, allArticles.length, allArticles]);
+    return () => clearTimeout(timeoutId);
+  }, [hasData, allArticles.length, allArticles, progress]);
 
   if (isLoading && !hasData) {
     return (
@@ -124,13 +156,35 @@ export function NewsCard() {
           {timeAgo && <span>{timeAgo}</span>}
         </div>
 
-      <div className="mt-2 h-0.5 bg-white/10 rounded-full overflow-hidden">
-        <div
-          className="h-full bg-white/30 transition-all duration-300 ease-linear"
-          style={{
-            width: `${((currentIndex + 1) / allArticles.length) * 100}%`,
-          }}
-        />
+      <div className="mt-2 flex items-center">
+        {Array.from({ length: allArticles.length }).map((_, index) => {
+          const isActive = index === currentIndex;
+          const isCompleted = index < currentIndex;
+          const sectionProgress = isActive ? progress : isCompleted ? 1 : 0;
+          const isCircleActive = isCompleted || (isActive && progress === 1);
+
+          return (
+            <div key={index} className="flex items-center flex-1">
+              <div className="flex-1 h-0.5 bg-white/10 rounded-full overflow-hidden relative">
+                <div
+                  className="h-full bg-white/30 transition-all duration-75 ease-linear"
+                  style={{
+                    width: `${sectionProgress * 100}%`,
+                  }}
+                />
+              </div>
+              {index < allArticles.length - 1 && (
+                <div className="flex items-center justify-center px-0.5">
+                  <div
+                    className={`w-1.5 h-1.5 rounded-full transition-all ${
+                      isCircleActive ? "bg-white/30" : "bg-white/10"
+                    }`}
+                  />
+                </div>
+              )}
+            </div>
+          );
+        })}
       </div>
     </div>
   );
