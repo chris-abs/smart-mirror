@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 
 export type LocationData = {
   coordinates: { lat: number; lon: number } | null;
@@ -10,56 +10,19 @@ export type LocationData = {
 const DEFAULT_COUNTRY_CODE = "gb"; 
 const DEFAULT_CITY = "London";
 
-async function getCountryCodeFromCoordinates(
-  lat: number,
-  lon: number
-): Promise<string> {
-  try {
-    const response = await fetch(
-      `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}&addressdetails=1`,
-      {
-        headers: {
-          "User-Agent": "SmartMirror/1.0", 
-        },
-      }
-    );
+const locationKey = ["location", "current"] as const;
 
-    if (!response.ok) {
-      throw new Error("Reverse geocoding failed");
-    }
+type LocationResult = {
+  coordinates: { lat: number; lon: number };
+  countryCode: string;
+};
 
-    const data = await response.json();
-    const countryCode = data.address?.country_code?.toLowerCase();
-
-    if (countryCode && countryCode.length === 2) {
-      return countryCode;
-    }
-
-    return DEFAULT_COUNTRY_CODE;
-  } catch (error) {
-    console.error("[Location] Reverse geocoding error:", error);
-    return DEFAULT_COUNTRY_CODE;
-  }
-}
-
-export function useLocation(): LocationData {
-  const [coordinates, setCoordinates] = useState<{ lat: number; lon: number } | null>(null);
-  const [countryCode, setCountryCode] = useState<string | null>(DEFAULT_COUNTRY_CODE);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<Error | null>(null);
-
-  useEffect(() => {
+async function getLocation(): Promise<LocationResult> {
+  return new Promise((resolve, reject) => {
     if (!("geolocation" in navigator)) {
-      const timeoutId = setTimeout(() => {
-        setIsLoading(false);
-      }, 0);
-      return () => clearTimeout(timeoutId);
+      reject(new Error("Geolocation not supported"));
+      return;
     }
-
-    const timeoutId = setTimeout(() => {
-      setIsLoading(true);
-      setError(null);
-    }, 0);
 
     navigator.geolocation.getCurrentPosition(
       async (position) => {
@@ -68,32 +31,59 @@ export function useLocation(): LocationData {
           lon: position.coords.longitude,
         };
 
-        setCoordinates(coords);
+        try {
+          const response = await fetch(
+            `https://nominatim.openstreetmap.org/reverse?format=json&lat=${coords.lat}&lon=${coords.lon}&addressdetails=1`,
+            {
+              headers: {
+                "User-Agent": "SmartMirror/1.0", 
+              },
+            }
+          );
 
-        const code = await getCountryCodeFromCoordinates(coords.lat, coords.lon);
-        setCountryCode(code);
-        setIsLoading(false);
+          if (!response.ok) {
+            throw new Error("Reverse geocoding failed");
+          }
+
+          const data = await response.json();
+          const countryCode = data.address?.country_code?.toLowerCase();
+
+          if (countryCode && countryCode.length === 2) {
+            resolve({ coordinates: coords, countryCode });
+          } else {
+            resolve({ coordinates: coords, countryCode: DEFAULT_COUNTRY_CODE });
+          }
+        } catch (error) {
+          console.error("[Location] Reverse geocoding error:", error);
+          resolve({ coordinates: coords, countryCode: DEFAULT_COUNTRY_CODE });
+        }
       },
       (geoError) => {
         console.error("[Location] Geolocation error:", geoError);
-        setError(new Error(geoError.message || "Geolocation failed"));
-        setCountryCode(DEFAULT_COUNTRY_CODE);
-        setIsLoading(false);
+        reject(new Error(geoError.message || "Geolocation failed"));
       },
       {
         timeout: 10000,
         maximumAge: 5 * 60 * 1000, 
       }
     );
+  });
+}
 
-    return () => clearTimeout(timeoutId);
-  }, []);
+export function useLocation(): LocationData {
+  const { data, isLoading, error } = useQuery<LocationResult>({
+    queryKey: locationKey,
+    queryFn: getLocation,
+    staleTime: 1000 * 60 * 30, // Cache for 30 minutes
+    gcTime: 1000 * 60 * 60, // Keep in cache for 1 hour
+    retry: 1,
+  });
 
   return {
-    coordinates,
-    countryCode,
+    coordinates: data?.coordinates ?? null,
+    countryCode: data?.countryCode ?? DEFAULT_COUNTRY_CODE,
     isLoading,
-    error,
+    error: error as Error | null,
   };
 }
 
