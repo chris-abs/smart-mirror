@@ -1,6 +1,7 @@
 import { SpotifyNowPlayingCard } from "../../modules/spotify/components/organisms/spotify-now-playing";
 import { WeatherCard } from "../../modules/weather/components/organisms/weather-card";
 import { NewsCard } from "../../modules/news/components/organisms/news-card";
+import { ButtonGroup } from "../molecules/button-group";
 import { getGreeting } from "../../lib/utils";
 
 const USER_NAME = "Chris";
@@ -53,6 +54,10 @@ export function Canvas() {
 
         <div className="mt-auto pt-6 w-full">
           <NewsCard />
+        </div>
+
+        <div className="mt-6 pb-8 w-full">
+          <ButtonGroup />
         </div>
       </main>
     </div>

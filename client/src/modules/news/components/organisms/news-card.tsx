@@ -62,7 +62,7 @@ export function NewsCard() {
 
   if (isLoading && !hasData) {
     return (
-      <div className="border border-white/10 rounded-xl p-4 bg-white/5 w-full">
+      <div className="rounded-xl p-4 bg-white/5 w-full">
         <div className="text-xs uppercase tracking-[0.2em] opacity-60 mb-3">
           News
         </div>
@@ -77,7 +77,7 @@ export function NewsCard() {
 
   if (!hasData) {
     return (
-      <div className="border border-white/10 rounded-xl p-4 bg-white/5 w-full">
+      <div className="rounded-xl p-4 bg-white/5 w-full">
         <div className="text-xs uppercase tracking-[0.2em] opacity-60 mb-2">
           News
         </div>
@@ -92,7 +92,7 @@ export function NewsCard() {
     : null;
 
   return (
-    <div className="border border-white/10 rounded-xl p-4 bg-white/5 w-full">
+    <div className="rounded-xl p-4 bg-white/5 w-full">
       <div className="flex items-center justify-between mb-3">
         <div className="text-xs uppercase tracking-[0.2em] opacity-60">
           {currentType === "breaking" ? "Breaking News" : "UFC News"}
