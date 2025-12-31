@@ -1,7 +1,7 @@
 import { Home, Dumbbell, User } from "lucide-react";
 
 import { IconButton } from "../atoms/icon-button";
-import { useNavigation } from "../../contexts/navigation-context";
+import { useNavigation } from "../../hooks/use-navigation";
 
 export function ButtonGroup() {
   const { setCurrentRoute } = useNavigation();

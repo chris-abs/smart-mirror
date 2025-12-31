@@ -1,4 +1,5 @@
-import { NavigationProvider, useNavigation } from "./contexts/navigation-context";
+import { NavigationProvider } from "./contexts/navigation-context";
+import { useNavigation } from "./hooks/use-navigation";
 import { Layout } from "./components/organisms/layout";
 import { HomeCanvas } from "./components/organisms/home-canvas";
 import { WorkoutCanvas } from "./components/organisms/workout-canvas";

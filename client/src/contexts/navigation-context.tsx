@@ -1,15 +1,5 @@
-import { createContext, useContext, useState, type ReactNode } from "react";
-
-export type Route = "home" | "workout" | "user";
-
-type NavigationContextType = {
-  currentRoute: Route;
-  setCurrentRoute: (route: Route) => void;
-};
-
-const NavigationContext = createContext<NavigationContextType | undefined>(
-  undefined,
-);
+import React, { useState, type ReactNode } from "react";
+import { NavigationContext, type Route } from "./navigation-context";
 
 export function NavigationProvider({ children }: { children: ReactNode }) {
   const [currentRoute, setCurrentRoute] = useState<Route>("home");
@@ -19,13 +9,5 @@ export function NavigationProvider({ children }: { children: ReactNode }) {
       {children}
     </NavigationContext.Provider>
   );
-}
-
-export function useNavigation() {
-  const context = useContext(NavigationContext);
-  if (context === undefined) {
-    throw new Error("useNavigation must be used within a NavigationProvider");
-  }
-  return context;
 }
 
