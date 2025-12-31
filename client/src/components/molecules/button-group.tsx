@@ -4,7 +4,7 @@ import { IconButton } from "../atoms/icon-button";
 import { useNavigation } from "../../contexts/navigation-context";
 
 export function ButtonGroup() {
-  const { currentRoute, setCurrentRoute } = useNavigation();
+  const { setCurrentRoute } = useNavigation();
 
   return (
     <div className="w-full flex justify-center items-center gap-3">
