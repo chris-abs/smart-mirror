@@ -74,8 +74,8 @@ export function useLocation(): LocationData {
   const { data, isLoading, error } = useQuery<LocationResult>({
     queryKey: locationKey,
     queryFn: getLocation,
-    staleTime: 1000 * 60 * 30, // Cache for 30 minutes
-    gcTime: 1000 * 60 * 60, // Keep in cache for 1 hour
+    staleTime: 1000 * 60 * 30, 
+    gcTime: 1000 * 60 * 60, 
     retry: 1,
   });
 
