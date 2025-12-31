@@ -6,7 +6,9 @@ export const weatherKey = ["weather", "current"] as const;
 
 function buildWeatherQueryKey(params: WeatherQueryParams) {
   if (params.type === "coordinates") {
-    return [...weatherKey, "coords", params.lat, params.lon] as const;
+    const roundedLat = Math.round(params.lat * 10000) / 10000;
+    const roundedLon = Math.round(params.lon * 10000) / 10000;
+    return [...weatherKey, "coords", roundedLat, roundedLon] as const;
   }
   return [...weatherKey, "city", params.city, params.country || ""] as const;
 }
