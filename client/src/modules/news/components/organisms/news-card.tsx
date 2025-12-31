@@ -2,10 +2,10 @@ import { useEffect, useState, useRef, useMemo } from "react";
 
 import { Skeleton } from "@/components/ui/skeleton";
 import { useBreakingNews, useUFCNews } from "../../queries";
-import { getTimeAgo } from "../../utils";
+import { getTimeAgo, filterBettingArticles } from "../../utils";
 import { useLocation } from "../../../../hooks/use-location";
 
-const SCROLL_INTERVAL = 10000; 
+const SCROLL_INTERVAL = 10000;
 
 export function NewsCard() {
   const { countryCode, isLoading: locationLoading } = useLocation();
@@ -17,10 +17,11 @@ export function NewsCard() {
   const prevDataKeyRef = useRef<string>("");
 
   const allArticles = useMemo(() => {
-    return [
+    const combined = [
       ...(breakingNews?.articles.map((article) => ({ ...article, type: "breaking" as const })) || []),
       ...(ufcNews?.articles.map((article) => ({ ...article, type: "ufc" as const })) || []),
     ];
+    return filterBettingArticles(combined);
   }, [breakingNews?.articles, ufcNews?.articles]);
 
   const isLoading = locationLoading || breakingLoading || ufcLoading;
