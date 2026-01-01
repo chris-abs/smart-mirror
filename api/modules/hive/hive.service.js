@@ -6,9 +6,7 @@ const USERNAME = process.env.HIVE_USERNAME;
 const PASSWORD = process.env.HIVE_PASSWORD;
 
 if (!USERNAME || !PASSWORD) {
-  console.warn(
-    "[Hive] Missing HIVE_USERNAME or HIVE_PASSWORD in .env"
-  );
+  console.warn("[Hive] Missing HIVE_USERNAME or HIVE_PASSWORD in .env");
 }
 
 const BASE_URL = "https://api.prod.bgch.com";
@@ -54,6 +52,9 @@ async function authenticate() {
     console.log("[Hive] Successfully authenticated");
   } catch (error) {
     console.error("[Hive] Authentication error:", error);
+    if (error instanceof TypeError && error.message.includes("fetch")) {
+      throw new Error(`Network error connecting to Hive API: ${error.message}`);
+    }
     throw error;
   }
 }
@@ -62,22 +63,34 @@ async function authenticate() {
  * Make an authenticated request to Hive API
  */
 async function hiveFetch(endpoint, options = {}) {
-  await authenticate();
+  try {
+    await authenticate();
+  } catch (error) {
+    throw new Error(`Authentication failed: ${error.message}`);
+  }
 
   const url = `${BASE_URL}${endpoint}`;
-  const response = await fetch(url, {
-    ...options,
-    headers: {
-      "Content-Type": "application/json",
-      "X-Omnia-Access-Token": sessionId,
-      ...(options.headers || {}),
-    },
-  });
+  let response;
+  try {
+    response = await fetch(url, {
+      ...options,
+      headers: {
+        "Content-Type": "application/json",
+        "X-Omnia-Access-Token": sessionId,
+        ...(options.headers || {}),
+      },
+    });
+  } catch (error) {
+    if (error instanceof TypeError && error.message.includes("fetch")) {
+      throw new Error(`Network error: ${error.message}`);
+    }
+    throw error;
+  }
 
   if (!response.ok) {
     const errorText = await response.text();
     console.error(`[Hive] API error ${response.status}:`, errorText);
-    throw new Error(`Hive API error: ${response.status}`);
+    throw new Error(`Hive API error ${response.status}: ${errorText}`);
   }
 
   return response.json();
