@@ -49,75 +49,87 @@ export function ThermostatCard() {
 
   if (isLoading && !status) {
     return (
-      <div className="rounded-xl border border-white/10 p-4 bg-white/5">
-        <div className="text-xs uppercase tracking-[0.2em] opacity-60 mb-3">
-          Thermostat
+      <div className="flex items-stretch gap-3">
+        <div className="rounded-xl border border-white/10 p-4 bg-white/5 flex-1">
+          <div className="text-xs uppercase tracking-[0.2em] opacity-60 mb-3">
+            Thermostat
+          </div>
+          <Skeleton className="h-12 w-24 mb-2" />
+          <Skeleton className="h-4 w-32" />
         </div>
-        <Skeleton className="h-12 w-24 mb-2" />
-        <Skeleton className="h-4 w-32" />
       </div>
     );
   }
 
   if (!status) {
     return (
-      <div className="rounded-xl border border-white/10 p-4 bg-white/5">
-        <div className="text-xs uppercase tracking-[0.2em] opacity-60 mb-2">
-          Thermostat
+      <div className="flex items-stretch gap-3">
+        <div className="rounded-xl border border-white/10 p-4 bg-white/5 flex-1">
+          <div className="text-xs uppercase tracking-[0.2em] opacity-60 mb-2">
+            Thermostat
+          </div>
+          <div className="text-sm opacity-60">No heating device found</div>
         </div>
-        <div className="text-sm opacity-60">No heating device found</div>
       </div>
     );
   }
 
   return (
-    <div className="rounded-xl border border-white/10 p-4 bg-white/5">
-      <div className="flex items-start justify-between mb-3">
-        <div className="text-xs uppercase tracking-[0.2em] opacity-60">
+    <div className="flex items-stretch gap-3">
+      {/* Main thermostat card */}
+      <div className="rounded-xl border border-white/10 p-4 bg-white/5 flex-1">
+        <div className="text-xs uppercase tracking-[0.2em] opacity-60 mb-3">
           Thermostat
         </div>
-        <IconButton onClick={handleExpand} aria-label="Expand thermostat">
-          {isExpanded ? "‹" : "›"}
-        </IconButton>
-      </div>
-
-      <div className="flex flex-col gap-4">
         <div>
           <div className="text-3xl font-semibold leading-none">
             {currentTemp !== null ? `${currentTemp}°` : "--°"}
           </div>
           <div className="text-sm opacity-80 mt-1">Current</div>
         </div>
-
-        {isExpanded && (
-          <div className="pt-4 border-t border-white/10">
-            <div className="text-xs uppercase tracking-[0.2em] opacity-60 mb-3">
-              Target
-            </div>
-            <div className="flex items-center gap-3">
-              <IconButton
-                onClick={handleDecreaseTemp}
-                disabled={setTemperatureMutation.isPending}
-                aria-label="Decrease temperature"
-              >
-                v
-              </IconButton>
-              <div className="flex-1 text-center">
-                <div className="text-2xl font-semibold">
-                  {targetTemp !== null ? `${targetTemp}°` : "--°"}
-                </div>
-              </div>
-              <IconButton
-                onClick={handleIncreaseTemp}
-                disabled={setTemperatureMutation.isPending}
-                aria-label="Increase temperature"
-              >
-                ^
-              </IconButton>
-            </div>
-          </div>
-        )}
       </div>
+
+      {/* Expand/Collapse button */}
+      <div className="flex items-center">
+        <IconButton
+          onClick={handleExpand}
+          aria-label={isExpanded ? "Collapse thermostat" : "Expand thermostat"}
+          className="h-full"
+        >
+          {isExpanded ? "‹" : "›"}
+        </IconButton>
+      </div>
+
+      {/* Expanded panel - slides in from right */}
+      {isExpanded && (
+        <div
+          className="rounded-xl border border-white/10 p-4 bg-white/5 flex flex-col items-center justify-between gap-4 min-w-[120px] animate-in slide-in-from-right"
+          style={{ animationDuration: "300ms" }}
+        >
+          <div className="text-xs uppercase tracking-[0.2em] opacity-60">
+            Target
+          </div>
+          <IconButton
+            onClick={handleIncreaseTemp}
+            disabled={setTemperatureMutation.isPending}
+            aria-label="Increase temperature"
+            className="w-full"
+          >
+            ^
+          </IconButton>
+          <div className="text-2xl font-semibold text-center">
+            {targetTemp !== null ? `${targetTemp}°` : "--°"}
+          </div>
+          <IconButton
+            onClick={handleDecreaseTemp}
+            disabled={setTemperatureMutation.isPending}
+            aria-label="Decrease temperature"
+            className="w-full"
+          >
+            v
+          </IconButton>
+        </div>
+      )}
     </div>
   );
 }
