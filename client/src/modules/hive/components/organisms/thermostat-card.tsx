@@ -101,35 +101,36 @@ export function ThermostatCard() {
       </div>
 
       {/* Expanded panel - slides in from right */}
-      {isExpanded && (
-        <div
-          className="rounded-xl border border-white/10 p-4 bg-white/5 flex flex-col items-center justify-between gap-4 min-w-[120px] animate-in slide-in-from-right"
-          style={{ animationDuration: "300ms" }}
-        >
-          <div className="text-xs uppercase tracking-[0.2em] opacity-60">
-            Target
-          </div>
-          <IconButton
-            onClick={handleIncreaseTemp}
-            disabled={setTemperatureMutation.isPending}
-            aria-label="Increase temperature"
-            className="w-full"
-          >
-            ^
-          </IconButton>
-          <div className="text-2xl font-semibold text-center">
-            {targetTemp !== null ? `${targetTemp}°` : "--°"}
-          </div>
-          <IconButton
-            onClick={handleDecreaseTemp}
-            disabled={setTemperatureMutation.isPending}
-            aria-label="Decrease temperature"
-            className="w-full"
-          >
-            v
-          </IconButton>
+      <div
+        className={`rounded-xl border border-white/10 p-4 bg-white/5 flex flex-col items-center justify-between gap-4 min-w-[120px] transition-all duration-300 ease-in-out overflow-hidden ${
+          isExpanded
+            ? "max-w-[120px] opacity-100 translate-x-0"
+            : "max-w-0 opacity-0 translate-x-4"
+        }`}
+      >
+        <div className="text-xs uppercase tracking-[0.2em] opacity-60 whitespace-nowrap">
+          Target
         </div>
-      )}
+        <IconButton
+          onClick={handleIncreaseTemp}
+          disabled={setTemperatureMutation.isPending}
+          aria-label="Increase temperature"
+          className="w-full"
+        >
+          ^
+        </IconButton>
+        <div className="text-2xl font-semibold text-center whitespace-nowrap">
+          {targetTemp !== null ? `${targetTemp}°` : "--°"}
+        </div>
+        <IconButton
+          onClick={handleDecreaseTemp}
+          disabled={setTemperatureMutation.isPending}
+          aria-label="Decrease temperature"
+          className="w-full"
+        >
+          v
+        </IconButton>
+      </div>
     </div>
   );
 }
