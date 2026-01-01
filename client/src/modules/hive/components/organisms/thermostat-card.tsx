@@ -1,4 +1,5 @@
 import { useState, useMemo } from "react";
+import { ChevronRight, ChevronLeft, ChevronUp, ChevronDown } from "lucide-react";
 
 import { Skeleton } from "@/components/ui/skeleton";
 import { IconButton } from "@/components/atoms/icon-button";
@@ -61,7 +62,7 @@ export function ThermostatCard() {
   if (isLoading && !status) {
     return (
       <div className="flex items-stretch gap-3">
-        <div className="rounded-xl border border-white/10 p-4 bg-white/5 flex-1 flex items-center gap-4">
+        <div className="rounded-l-xl border border-white/10 p-4 bg-white/5 flex-1 flex items-center gap-4">
           <div className="text-xs uppercase tracking-[0.2em] opacity-60">
             Thermostat
           </div>
@@ -74,7 +75,7 @@ export function ThermostatCard() {
   if (!status) {
     return (
       <div className="flex items-stretch gap-3">
-        <div className="rounded-xl border border-white/10 p-4 bg-white/5 flex-1">
+        <div className="rounded-l-xl border border-white/10 p-4 bg-white/5 flex-1">
           <div className="text-xs uppercase tracking-[0.2em] opacity-60 mb-2">
             Thermostat
           </div>
@@ -86,7 +87,11 @@ export function ThermostatCard() {
 
   return (
     <div className="flex items-stretch gap-3">
-      <div className="rounded-xl border border-white/10 p-4 bg-white/5 flex-1 flex flex-col items-center gap-4 min-h-[120px]">
+      <div
+        className={`border border-white/10 p-4 bg-white/5 flex-1 flex flex-col items-center gap-4 min-h-[120px] transition-all duration-300 ease-in-out ${
+          isExpanded ? "rounded-xl" : "rounded-l-xl"
+        }`}
+      >
         <div className="text-xs uppercase tracking-[0.2em] opacity-60">
           Thermostat
         </div>
@@ -97,15 +102,20 @@ export function ThermostatCard() {
         <IconButton
           onClick={handleExpand}
           aria-label={isExpanded ? "Collapse thermostat" : "Expand thermostat"}
-          className="h-full self-stretch"
+          className={`h-full self-stretch transition-all duration-300 ease-in-out ${
+            isExpanded ? "rounded-l-xl rounded-r-none" : "rounded-r-xl rounded-l-none"
+          }`}
         >
-          {isExpanded ? "‹" : "›"}
+          {isExpanded ? (
+            <ChevronLeft className="w-4 h-4" />
+          ) : (
+            <ChevronRight className="w-4 h-4" />
+          )}
         </IconButton>
       </div>
 
-      {/* Expanded panel - slides in from right */}
       <div
-        className={`rounded-xl border border-white/10 p-4 bg-white/5 flex flex-col items-center justify-between gap-4 transition-all duration-300 ease-in-out ${
+        className={`rounded-r-xl border border-white/10 p-4 bg-white/5 flex flex-col items-center justify-between gap-4 transition-all duration-300 ease-in-out ${
           isExpanded
             ? "w-[120px] opacity-100 translate-x-0"
             : "w-0 opacity-0 -translate-x-4 overflow-hidden"
@@ -122,7 +132,7 @@ export function ThermostatCard() {
               aria-label="Increase temperature"
               className="w-full"
             >
-              ^
+              <ChevronUp className="w-4 h-4" />
             </IconButton>
             <div className="text-2xl font-semibold text-center whitespace-nowrap">
               {targetTemp !== null ? `${targetTemp}°` : "--°"}
@@ -133,7 +143,7 @@ export function ThermostatCard() {
               aria-label="Decrease temperature"
               className="w-full"
             >
-              v
+              <ChevronDown className="w-4 h-4" />
             </IconButton>
           </>
         )}
