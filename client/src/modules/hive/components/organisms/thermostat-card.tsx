@@ -86,7 +86,7 @@ export function ThermostatCard() {
   }
 
   return (
-    <div className="flex items-stretch gap-3">
+    <div className="flex items-stretch gap-1.5">
       <div
         className={`border border-white/10 p-4 bg-white/5 flex-1 flex flex-col items-center gap-4 min-h-[120px] transition-all duration-300 ease-in-out ${
           isExpanded ? "rounded-xl" : "rounded-l-xl"
@@ -115,7 +115,7 @@ export function ThermostatCard() {
       </div>
 
       <div
-        className={`rounded-r-xl border border-white/10 p-4 bg-white/5 flex flex-col items-center justify-between gap-4 transition-all duration-300 ease-in-out ${
+        className={`rounded-r-xl border border-white/10 p-4 bg-white/5 flex flex-col items-center justify-between gap-4 min-h-[120px] transition-all duration-300 ease-in-out ${
           isExpanded
             ? "w-[120px] opacity-100 translate-x-0"
             : "w-0 opacity-0 -translate-x-4 overflow-hidden"
