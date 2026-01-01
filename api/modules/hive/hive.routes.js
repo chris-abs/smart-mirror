@@ -76,4 +76,3 @@ router.post("/mode/:deviceId", async (req, res) => {
 });
 
 export default router;
-
