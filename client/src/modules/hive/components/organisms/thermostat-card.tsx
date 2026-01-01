@@ -86,10 +86,10 @@ export function ThermostatCard() {
   }
 
   return (
-    <div className="flex items-stretch gap-1.5">
+    <div className="flex items-stretch">
       <div
-        className={`border border-white/10 p-4 bg-white/5 flex-1 flex flex-col items-center gap-4 min-h-[120px] transition-all duration-300 ease-in-out ${
-          isExpanded ? "rounded-xl" : "rounded-l-xl"
+        className={`border border-white/10 p-4 bg-white/5 flex-1 flex flex-col items-center gap-4 min-h-[200px] transition-all duration-300 ease-in-out ${
+          isExpanded ? "rounded-xl mr-3" : "rounded-l-xl mr-1.5"
         }`}
       >
         <div className="text-xs uppercase tracking-[0.2em] opacity-60">
@@ -115,7 +115,7 @@ export function ThermostatCard() {
       </div>
 
       <div
-        className={`rounded-r-xl border border-white/10 p-4 bg-white/5 flex flex-col items-center justify-between gap-4 min-h-[120px] transition-all duration-300 ease-in-out ${
+        className={`rounded-r-xl border border-white/10 p-4 bg-white/5 flex flex-col items-center justify-between gap-4 min-h-[140px] transition-all duration-300 ease-in-out ml-1.5 ${
           isExpanded
             ? "w-[120px] opacity-100 translate-x-0"
             : "w-0 opacity-0 -translate-x-4 overflow-hidden"
