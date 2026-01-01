@@ -1,7 +1,7 @@
-import { SpotifyNowPlayingCard } from "../../modules/spotify/components/organisms/spotify-now-playing";
-import { WeatherCard } from "../../modules/weather/components/organisms/weather-card";
-import { NewsCard } from "../../modules/news/components/organisms/news-card";
-import { getGreeting } from "../../lib/utils";
+import { SpotifyNowPlayingCard } from "../../../modules/spotify/components/organisms/spotify-now-playing";
+import { WeatherCard } from "../../../modules/weather/components/organisms/weather-card";
+import { NewsCard } from "../../../modules/news/components/organisms/news-card";
+import { getGreeting } from "../../../lib/utils";
 
 const USER_NAME = "Chris";
 

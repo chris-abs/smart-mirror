@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
-import { WorkoutStreak } from "../../modules/workout/components/organisms/workout-streak";
-import { SpotifyNowPlayingCard } from "../../modules/spotify/components/organisms/spotify-now-playing";
+
+import { WorkoutStreak } from "../../../modules/workout/components/organisms/workout-streak";
+import { SpotifyNowPlayingCard } from "../../../modules/spotify/components/organisms/spotify-now-playing";
 
 export function WorkoutCanvas() {
   const [now, setNow] = useState(new Date());
