@@ -8,7 +8,7 @@ import type { NewsArticle } from "../../../lib/types/news";
 export function containsBettingContent(
   article: Pick<NewsArticle, "title" | "description">
 ): boolean {
-  const betRegex = /\b(bet|bets)\b/gi;
+  const betRegex = /\b(bet|bets|betmgm)\b/gi;
   const title = article.title || "";
   const description = article.description || "";
   return betRegex.test(title) || betRegex.test(description);
