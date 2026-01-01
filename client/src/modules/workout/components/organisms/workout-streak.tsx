@@ -50,9 +50,21 @@ export function WorkoutStreak() {
     : false;
 
   return (
-    <div className="rounded-xl border border-white/10 p-6 bg-white/5 flex flex-col gap-6">
-      <div className="text-xs uppercase tracking-[0.2em] opacity-60">
-        Daily Exercise Streak
+    <div className="rounded-xl border border-white/10 p-6 bg-white/5 flex flex-col gap-6 relative">
+      <div className="flex justify-between items-start">
+        <div className="text-xs uppercase tracking-[0.2em] opacity-60">
+          Daily Exercise Streak
+        </div>
+        {streak > 0 && (
+          <IconButton
+            onClick={handleReset}
+            disabled={resetStreakMutation.isPending}
+            aria-label="Reset streak"
+            className="opacity-30 hover:opacity-60 p-1! min-w-0! -mt-0.5"
+          >
+            <RotateCcw className="w-3 h-3" />
+          </IconButton>
+        )}
       </div>
 
       <div className="flex flex-col items-center gap-2">
@@ -107,17 +119,6 @@ export function WorkoutStreak() {
             </>
           )}
         </button>
-
-        {streak > 0 && (
-          <IconButton
-            onClick={handleReset}
-            disabled={resetStreakMutation.isPending}
-            aria-label="Reset streak"
-            className="w-full opacity-60 hover:opacity-100"
-          >
-            <RotateCcw className="w-4 h-4" />
-          </IconButton>
-        )}
       </div>
 
       <div className="flex flex-col gap-2 mt-auto">
