@@ -84,8 +84,8 @@ export function ThermostatCard() {
 
   if (!status && !devicesLoading && (!devices || devices.length === 0)) {
     return (
-      <div className="flex items-stretch gap-3">
-        <div className="rounded-l-xl border border-white/10 p-4 bg-white/5 flex-1 flex flex-col items-center justify-center gap-3 min-h-[200px]">
+      <div className="flex items-stretch">
+        <div className="rounded-l-xl border border-white/10 p-4 bg-white/5 flex-1 flex flex-col items-center justify-center gap-3 min-h-[200px] mr-1.5">
           <div className="text-xs uppercase tracking-[0.2em] opacity-60">
             Thermostat
           </div>
@@ -97,6 +97,16 @@ export function ThermostatCard() {
             className="mt-2"
           >
             <RefreshCw className={`w-4 h-4 ${devicesLoading ? "animate-spin" : ""}`} />
+          </IconButton>
+        </div>
+
+        <div className="flex items-stretch">
+          <IconButton
+            disabled
+            aria-label="No device"
+            className="h-full self-stretch rounded-r-xl rounded-l-none opacity-50"
+          >
+            <ChevronRight className="w-4 h-4" />
           </IconButton>
         </div>
       </div>
