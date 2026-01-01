@@ -1,5 +1,5 @@
 import { useState, useMemo } from "react";
-import { ChevronRight, ChevronLeft, ChevronUp, ChevronDown } from "lucide-react";
+import { ChevronRight, ChevronLeft, ChevronUp, ChevronDown, RefreshCw } from "lucide-react";
 
 import { Skeleton } from "@/components/ui/skeleton";
 import { IconButton } from "@/components/atoms/icon-button";
@@ -8,7 +8,7 @@ import { useHiveDevices, useHiveStatus, useSetTemperature } from "../../queries"
 
 export function ThermostatCard() {
   const [isExpanded, setIsExpanded] = useState(false);
-  const { data: devices, isLoading: devicesLoading } = useHiveDevices();
+  const { data: devices, isLoading: devicesLoading, refetch: refetchDevices } = useHiveDevices();
 
   const primaryDevice = useMemo(() => {
     if (!devices || devices.length === 0) return null;
@@ -72,14 +72,22 @@ export function ThermostatCard() {
     );
   }
 
-  if (!status) {
+  if (!status && !devicesLoading && (!devices || devices.length === 0)) {
     return (
       <div className="flex items-stretch gap-3">
-        <div className="rounded-l-xl border border-white/10 p-4 bg-white/5 flex-1">
-          <div className="text-xs uppercase tracking-[0.2em] opacity-60 mb-2">
+        <div className="rounded-l-xl border border-white/10 p-4 bg-white/5 flex-1 flex flex-col items-center justify-center gap-3 min-h-[200px]">
+          <div className="text-xs uppercase tracking-[0.2em] opacity-60">
             Thermostat
           </div>
-          <div className="text-sm opacity-60">No heating device found</div>
+          <div className="text-sm opacity-60 text-center">No heating device found</div>
+          <IconButton
+            onClick={() => refetchDevices()}
+            disabled={devicesLoading}
+            aria-label="Retry connection"
+            className="mt-2"
+          >
+            <RefreshCw className={`w-4 h-4 ${devicesLoading ? "animate-spin" : ""}`} />
+          </IconButton>
         </div>
       </div>
     );
