@@ -27,8 +27,9 @@ export function ThermostatCard() {
   };
 
   const handleIncreaseTemp = () => {
-    if (!primaryDevice || !targetTemp) return;
-    const newTemp = Math.min(30, targetTemp + 0.5);
+    if (!primaryDevice) return;
+    const currentTarget = targetTemp ?? 20;
+    const newTemp = Math.min(30, currentTarget + 0.5);
     setTemperatureMutation.mutate({
       deviceId: primaryDevice.id,
       temperature: newTemp,
@@ -36,8 +37,9 @@ export function ThermostatCard() {
   };
 
   const handleDecreaseTemp = () => {
-    if (!primaryDevice || !targetTemp) return;
-    const newTemp = Math.max(5, targetTemp - 0.5);
+    if (!primaryDevice) return;
+    const currentTarget = targetTemp ?? 20;
+    const newTemp = Math.max(5, currentTarget - 0.5);
     setTemperatureMutation.mutate({
       deviceId: primaryDevice.id,
       temperature: newTemp,
@@ -97,7 +99,7 @@ export function ThermostatCard() {
                 disabled={setTemperatureMutation.isPending}
                 aria-label="Decrease temperature"
               >
-                ↓
+                v
               </IconButton>
               <div className="flex-1 text-center">
                 <div className="text-2xl font-semibold">
@@ -109,7 +111,7 @@ export function ThermostatCard() {
                 disabled={setTemperatureMutation.isPending}
                 aria-label="Increase temperature"
               >
-                ↑
+                ^
               </IconButton>
             </div>
           </div>
