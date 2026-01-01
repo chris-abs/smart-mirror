@@ -61,12 +61,22 @@ export function ThermostatCard() {
 
   if (isLoading && !status) {
     return (
-      <div className="flex items-stretch gap-3">
-        <div className="rounded-l-xl border border-white/10 p-4 bg-white/5 flex-1 flex items-center gap-4">
+      <div className="flex items-stretch">
+        <div className="rounded-l-xl border border-white/10 p-4 bg-white/5 flex-1 flex flex-col items-center gap-4 min-h-[200px] mr-1.5">
           <div className="text-xs uppercase tracking-[0.2em] opacity-60">
             Thermostat
           </div>
           <Skeleton className="h-24 w-24 rounded-full" />
+        </div>
+
+        <div className="flex items-stretch">
+          <IconButton
+            disabled
+            aria-label="Loading"
+            className="h-full self-stretch rounded-r-xl rounded-l-none opacity-50"
+          >
+            <ChevronRight className="w-4 h-4" />
+          </IconButton>
         </div>
       </div>
     );
