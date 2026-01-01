@@ -1,6 +1,10 @@
 import dotenv from "dotenv";
+import { createRequire } from "module";
 
 dotenv.config();
+
+const require = createRequire(import.meta.url);
+const { Hivehome } = require("node-hivehome");
 
 const USERNAME = process.env.HIVE_USERNAME;
 const PASSWORD = process.env.HIVE_PASSWORD;
@@ -9,97 +13,48 @@ if (!USERNAME || !PASSWORD) {
   console.warn("[Hive] Missing HIVE_USERNAME or HIVE_PASSWORD in .env");
 }
 
-const BASE_URL = "https://api.prod.bgch.com";
+let hiveInstance = null;
+let isAuthenticated = false;
 
-let sessionId = null;
-let sessionExpiresAt = 0;
-
-async function authenticate() {
+async function getHiveInstance() {
   if (!USERNAME || !PASSWORD) {
     throw new Error("Hive credentials are not configured");
   }
 
-  const now = Date.now();
-  if (sessionId && now < sessionExpiresAt - 60000) {
-    return;
+  if (!hiveInstance) {
+    hiveInstance = new Hivehome(USERNAME);
   }
 
-  try {
-    const response = await fetch(`${BASE_URL}/omniauth/sessions`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        session: {
-          username: USERNAME,
-          password: PASSWORD,
-        },
-      }),
-    });
-
-    if (!response.ok) {
-      const errorText = await response.text();
-      throw new Error(
-        `Hive authentication failed: ${response.status} - ${errorText}`
-      );
+  if (!isAuthenticated) {
+    try {
+      await hiveInstance.auth.login(PASSWORD);
+      isAuthenticated = true;
+      console.log("[Hive] Successfully authenticated");
+    } catch (error) {
+      console.error("[Hive] Authentication error:", error);
+      isAuthenticated = false;
+      throw new Error(`Hive authentication failed: ${error.message}`);
     }
-
-    const data = await response.json();
-    sessionId = data.sessionId;
-    sessionExpiresAt = Date.now() + 12 * 60 * 60 * 1000;
-
-    console.log("[Hive] Successfully authenticated");
-  } catch (error) {
-    console.error("[Hive] Authentication error:", error);
-    if (error instanceof TypeError && error.message.includes("fetch")) {
-      throw new Error(`Network error connecting to Hive API: ${error.message}`);
-    }
-    throw error;
-  }
-}
-
-/**
- * Make an authenticated request to Hive API
- */
-async function hiveFetch(endpoint, options = {}) {
-  try {
-    await authenticate();
-  } catch (error) {
-    throw new Error(`Authentication failed: ${error.message}`);
   }
 
-  const url = `${BASE_URL}${endpoint}`;
-  let response;
-  try {
-    response = await fetch(url, {
-      ...options,
-      headers: {
-        "Content-Type": "application/json",
-        "X-Omnia-Access-Token": sessionId,
-        ...(options.headers || {}),
-      },
-    });
-  } catch (error) {
-    if (error instanceof TypeError && error.message.includes("fetch")) {
-      throw new Error(`Network error: ${error.message}`);
-    }
-    throw error;
-  }
-
-  if (!response.ok) {
-    const errorText = await response.text();
-    console.error(`[Hive] API error ${response.status}:`, errorText);
-    throw new Error(`Hive API error ${response.status}: ${errorText}`);
-  }
-
-  return response.json();
+  return hiveInstance;
 }
 
 export async function getDevices() {
   try {
-    const data = await hiveFetch("/omnia/nodes");
-    return data.nodes || [];
+    const hive = await getHiveInstance();
+    const heatingData = await hive.heating.get();
+    
+    // Convert the heating data to our device format
+    if (!heatingData || !Array.isArray(heatingData)) {
+      return [];
+    }
+
+    return heatingData.map((device) => ({
+      id: device.id || device.deviceId,
+      name: device.name || "Hive Device",
+      type: "heating",
+    }));
   } catch (error) {
     console.error("[Hive] getDevices error:", error);
     throw error;
@@ -108,15 +63,26 @@ export async function getDevices() {
 
 export async function getHeatingStatus(deviceId) {
   try {
-    const data = await hiveFetch(`/omnia/nodes/${deviceId}`);
+    const hive = await getHiveInstance();
+    const heatingData = await hive.heating.get();
+    
+    // Find the device by ID
+    const device = Array.isArray(heatingData)
+      ? heatingData.find((d) => (d.id || d.deviceId) === deviceId)
+      : heatingData;
+
+    if (!device) {
+      throw new Error(`Device ${deviceId} not found`);
+    }
+
     return {
-      deviceId: data.id,
-      name: data.name,
-      temperature: data.state?.temperature,
-      targetTemperature: data.state?.target,
-      mode: data.state?.mode,
-      isHeating: data.state?.heating,
-      isOnline: data.state?.online,
+      deviceId: device.id || device.deviceId,
+      name: device.name || "Hive Device",
+      temperature: device.temperature,
+      targetTemperature: device.target,
+      mode: device.mode,
+      isHeating: device.heating,
+      isOnline: device.online !== false,
     };
   } catch (error) {
     console.error("[Hive] getHeatingStatus error:", error);
@@ -130,17 +96,8 @@ export async function setTemperature(deviceId, temperature) {
   }
 
   try {
-    await hiveFetch(`/omnia/nodes/${deviceId}`, {
-      method: "PUT",
-      body: JSON.stringify({
-        nodes: [
-          {
-            id: deviceId,
-            target: temperature,
-          },
-        ],
-      }),
-    });
+    const hive = await getHiveInstance();
+    await hive.heating.setTargetTemperature(deviceId, temperature);
     return { ok: true, temperature };
   } catch (error) {
     console.error("[Hive] setTemperature error:", error);
@@ -150,23 +107,31 @@ export async function setTemperature(deviceId, temperature) {
 
 export async function setMode(deviceId, mode) {
   const validModes = ["MANUAL", "SCHEDULE", "BOOST", "OFF"];
-  if (!validModes.includes(mode.toUpperCase())) {
+  const upperMode = mode.toUpperCase();
+  if (!validModes.includes(upperMode)) {
     throw new Error(`Mode must be one of: ${validModes.join(", ")}`);
   }
 
   try {
-    await hiveFetch(`/omnia/nodes/${deviceId}`, {
-      method: "PUT",
-      body: JSON.stringify({
-        nodes: [
-          {
-            id: deviceId,
-            mode: mode.toUpperCase(),
-          },
-        ],
-      }),
-    });
-    return { ok: true, mode: mode.toUpperCase() };
+    const hive = await getHiveInstance();
+    
+    // Map our mode names to node-hivehome method calls
+    switch (upperMode) {
+      case "MANUAL":
+        await hive.heating.setMode(deviceId, "MANUAL");
+        break;
+      case "SCHEDULE":
+        await hive.heating.setMode(deviceId, "SCHEDULE");
+        break;
+      case "BOOST":
+        await hive.heating.boost(deviceId);
+        break;
+      case "OFF":
+        await hive.heating.setMode(deviceId, "OFF");
+        break;
+    }
+    
+    return { ok: true, mode: upperMode };
   } catch (error) {
     console.error("[Hive] setMode error:", error);
     throw error;
