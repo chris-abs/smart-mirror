@@ -1,20 +1,30 @@
+import { useState, useEffect } from "react";
 import { WorkoutStreak } from "../../modules/workout/components/organisms/workout-streak";
 import { SpotifyNowPlayingCard } from "../../modules/spotify/components/organisms/spotify-now-playing";
 
 export function WorkoutCanvas() {
-  const now = new Date();
+  const [now, setNow] = useState(new Date());
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setNow(new Date());
+    }, 60000);
+
+    return () => clearInterval(interval);
+  }, []);
 
   return (
     <>
       <header className="flex justify-between items-start px-8 py-6">
-        <div>
-          <div className="text-4xl font-bold leading-tight tracking-tight">
+
+          <div>
+          <div className="text-xl font-medium opacity-80 mb-1">
             Abstracked
           </div>
-          <div className="text-sm opacity-60 mt-1">
+          <div className="text-4xl font-bold leading-tight tracking-tight">
             No such Inner Bitch!
           </div>
-        </div>
+          </div>
         <div className="text-right">
           <div className="text-5xl font-light leading-none">
             {now.toLocaleTimeString([], {
