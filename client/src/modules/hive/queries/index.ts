@@ -72,7 +72,7 @@ export function useSetTemperature() {
 
       return { previousStatus };
     },
-    onError: (err, variables, context) => {
+    onError: (_err, variables, context) => {
       // Rollback on error
       if (context?.previousStatus) {
         queryClient.setQueryData(

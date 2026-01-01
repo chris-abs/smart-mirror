@@ -38,12 +38,7 @@ export function ThermostatCard() {
         temperature: newTemp,
       },
       {
-        onSuccess: () => {
-          // Optimistically update the query cache
-          if (status) {
-            // The query will refetch automatically due to invalidation
-          }
-        },
+        onSuccess: () => {},
       }
     );
   };
@@ -58,9 +53,7 @@ export function ThermostatCard() {
         temperature: newTemp,
       },
       {
-        onSuccess: () => {
-          // The query will refetch automatically due to invalidation
-        },
+        onSuccess: () => {},
       }
     );
   };
@@ -93,15 +86,13 @@ export function ThermostatCard() {
 
   return (
     <div className="flex items-stretch gap-3">
-      {/* Main thermostat card */}
-      <div className="rounded-xl border border-white/10 p-4 bg-white/5 flex-1 flex items-center gap-4 min-h-[120px]">
+      <div className="rounded-xl border border-white/10 p-4 bg-white/5 flex-1 flex flex-col items-center gap-4 min-h-[120px]">
         <div className="text-xs uppercase tracking-[0.2em] opacity-60">
           Thermostat
         </div>
         <CircularTempIndicator temperature={currentTemp} size={100} />
       </div>
 
-      {/* Expand/Collapse button - matches card height */}
       <div className="flex items-stretch">
         <IconButton
           onClick={handleExpand}
