@@ -27,12 +27,20 @@ async function getHiveInstance() {
 
   if (!isAuthenticated) {
     try {
-      await hiveInstance.auth.login(PASSWORD);
+      // Try to login - the library handles the authentication internally
+      const result = await hiveInstance.auth.login(PASSWORD);
+      console.log("[Hive] Login result:", result);
       isAuthenticated = true;
       console.log("[Hive] Successfully authenticated");
     } catch (error) {
-      console.error("[Hive] Authentication error:", error);
+      console.error("[Hive] Authentication error details:", {
+        message: error.message,
+        stack: error.stack,
+        error: error,
+      });
       isAuthenticated = false;
+      // Reset instance on auth failure to allow retry
+      hiveInstance = null;
       throw new Error(`Hive authentication failed: ${error.message}`);
     }
   }
@@ -44,7 +52,7 @@ export async function getDevices() {
   try {
     const hive = await getHiveInstance();
     const heatingData = await hive.heating.get();
-    
+
     // Convert the heating data to our device format
     if (!heatingData || !Array.isArray(heatingData)) {
       return [];
@@ -65,7 +73,7 @@ export async function getHeatingStatus(deviceId) {
   try {
     const hive = await getHiveInstance();
     const heatingData = await hive.heating.get();
-    
+
     // Find the device by ID
     const device = Array.isArray(heatingData)
       ? heatingData.find((d) => (d.id || d.deviceId) === deviceId)
@@ -114,7 +122,7 @@ export async function setMode(deviceId, mode) {
 
   try {
     const hive = await getHiveInstance();
-    
+
     // Map our mode names to node-hivehome method calls
     switch (upperMode) {
       case "MANUAL":
@@ -130,7 +138,7 @@ export async function setMode(deviceId, mode) {
         await hive.heating.setMode(deviceId, "OFF");
         break;
     }
-    
+
     return { ok: true, mode: upperMode };
   } catch (error) {
     console.error("[Hive] setMode error:", error);
