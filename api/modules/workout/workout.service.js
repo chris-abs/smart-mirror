@@ -77,3 +77,4 @@ export async function resetWorkoutStreak() {
   await writeWorkoutData(resetData);
   return resetData;
 }
+

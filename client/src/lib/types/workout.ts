@@ -3,3 +3,4 @@ export interface WorkoutStreak {
   lastWorkoutDate: string | null;
 }
 
+
