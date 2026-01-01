@@ -5,11 +5,9 @@ dotenv.config();
 const USERNAME = process.env.HIVE_USERNAME;
 const PASSWORD = process.env.HIVE_PASSWORD;
 
-const USE_DUMMY_DATA = !process.env.HIVE_USERNAME || !process.env.HIVE_PASSWORD;
-
-if (USE_DUMMY_DATA) {
+if (!USERNAME || !PASSWORD) {
   console.warn(
-    "[Hive] Using dummy data - HIVE_USERNAME or HIVE_PASSWORD not configured"
+    "[Hive] Missing HIVE_USERNAME or HIVE_PASSWORD in .env"
   );
 }
 
@@ -17,10 +15,6 @@ const BASE_URL = "https://api.prod.bgch.com";
 
 let sessionId = null;
 let sessionExpiresAt = 0;
-
-// Dummy data state for testing
-let dummyTargetTemperature = 21.0;
-const DUMMY_DEVICE_ID = "dummy-device-001";
 
 async function authenticate() {
   if (!USERNAME || !PASSWORD) {
@@ -90,18 +84,6 @@ async function hiveFetch(endpoint, options = {}) {
 }
 
 export async function getDevices() {
-  if (USE_DUMMY_DATA) {
-    // Simulate API delay
-    await new Promise((resolve) => setTimeout(resolve, 300));
-    return [
-      {
-        id: DUMMY_DEVICE_ID,
-        name: "Living Room Thermostat",
-        type: "heating",
-      },
-    ];
-  }
-
   try {
     const data = await hiveFetch("/omnia/nodes");
     return data.nodes || [];
@@ -112,26 +94,6 @@ export async function getDevices() {
 }
 
 export async function getHeatingStatus(deviceId) {
-  if (USE_DUMMY_DATA) {
-    // Simulate API delay
-    await new Promise((resolve) => setTimeout(resolve, 200));
-
-    // Simulate slight temperature variation
-    const baseTemp = 20.5;
-    const variation = Math.sin(Date.now() / 10000) * 0.5;
-    const currentTemp = Math.round((baseTemp + variation) * 10) / 10;
-
-    return {
-      deviceId: DUMMY_DEVICE_ID,
-      name: "Living Room Thermostat",
-      temperature: currentTemp,
-      targetTemperature: dummyTargetTemperature,
-      mode: "MANUAL",
-      isHeating: currentTemp < dummyTargetTemperature,
-      isOnline: true,
-    };
-  }
-
   try {
     const data = await hiveFetch(`/omnia/nodes/${deviceId}`);
     return {
@@ -154,16 +116,8 @@ export async function setTemperature(deviceId, temperature) {
     throw new Error("Temperature must be a number between 5 and 30");
   }
 
-  if (USE_DUMMY_DATA) {
-    // Simulate API delay
-    await new Promise((resolve) => setTimeout(resolve, 300));
-    dummyTargetTemperature = temperature;
-    console.log(`[Hive] Dummy data: Set target temperature to ${temperature}°`);
-    return { ok: true, temperature };
-  }
-
   try {
-    const data = await hiveFetch(`/omnia/nodes/${deviceId}`, {
+    await hiveFetch(`/omnia/nodes/${deviceId}`, {
       method: "PUT",
       body: JSON.stringify({
         nodes: [
@@ -187,15 +141,8 @@ export async function setMode(deviceId, mode) {
     throw new Error(`Mode must be one of: ${validModes.join(", ")}`);
   }
 
-  if (USE_DUMMY_DATA) {
-    // Simulate API delay
-    await new Promise((resolve) => setTimeout(resolve, 300));
-    console.log(`[Hive] Dummy data: Set mode to ${mode.toUpperCase()}`);
-    return { ok: true, mode: mode.toUpperCase() };
-  }
-
   try {
-    const data = await hiveFetch(`/omnia/nodes/${deviceId}`, {
+    await hiveFetch(`/omnia/nodes/${deviceId}`, {
       method: "PUT",
       body: JSON.stringify({
         nodes: [
