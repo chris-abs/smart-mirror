@@ -89,12 +89,12 @@ export function ThermostatCard() {
         </div>
       </div>
 
-      {/* Expand/Collapse button */}
-      <div className="flex items-center">
+      {/* Expand/Collapse button - matches card height */}
+      <div className="flex items-stretch">
         <IconButton
           onClick={handleExpand}
           aria-label={isExpanded ? "Collapse thermostat" : "Expand thermostat"}
-          className="h-full"
+          className="h-full self-stretch"
         >
           {isExpanded ? "‹" : "›"}
         </IconButton>
@@ -102,34 +102,38 @@ export function ThermostatCard() {
 
       {/* Expanded panel - slides in from right */}
       <div
-        className={`rounded-xl border border-white/10 p-4 bg-white/5 flex flex-col items-center justify-between gap-4 min-w-[120px] transition-all duration-300 ease-in-out overflow-hidden ${
+        className={`rounded-xl border border-white/10 p-4 bg-white/5 flex flex-col items-center justify-between gap-4 transition-all duration-300 ease-in-out ${
           isExpanded
-            ? "max-w-[120px] opacity-100 translate-x-0"
-            : "max-w-0 opacity-0 translate-x-4"
+            ? "w-[120px] opacity-100 translate-x-0"
+            : "w-0 opacity-0 -translate-x-4 overflow-hidden"
         }`}
       >
-        <div className="text-xs uppercase tracking-[0.2em] opacity-60 whitespace-nowrap">
-          Target
-        </div>
-        <IconButton
-          onClick={handleIncreaseTemp}
-          disabled={setTemperatureMutation.isPending}
-          aria-label="Increase temperature"
-          className="w-full"
-        >
-          ^
-        </IconButton>
-        <div className="text-2xl font-semibold text-center whitespace-nowrap">
-          {targetTemp !== null ? `${targetTemp}°` : "--°"}
-        </div>
-        <IconButton
-          onClick={handleDecreaseTemp}
-          disabled={setTemperatureMutation.isPending}
-          aria-label="Decrease temperature"
-          className="w-full"
-        >
-          v
-        </IconButton>
+        {isExpanded && (
+          <>
+            <div className="text-xs uppercase tracking-[0.2em] opacity-60 whitespace-nowrap">
+              Target
+            </div>
+            <IconButton
+              onClick={handleIncreaseTemp}
+              disabled={setTemperatureMutation.isPending}
+              aria-label="Increase temperature"
+              className="w-full"
+            >
+              ^
+            </IconButton>
+            <div className="text-2xl font-semibold text-center whitespace-nowrap">
+              {targetTemp !== null ? `${targetTemp}°` : "--°"}
+            </div>
+            <IconButton
+              onClick={handleDecreaseTemp}
+              disabled={setTemperatureMutation.isPending}
+              aria-label="Decrease temperature"
+              className="w-full"
+            >
+              v
+            </IconButton>
+          </>
+        )}
       </div>
     </div>
   );
