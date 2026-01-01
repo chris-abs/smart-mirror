@@ -6,3 +6,4 @@ api/modules/spotify/spotify-tokens.json
 .env.local
 .env.*.local
 api/.env
+api/modules/workout/workout-data.json
