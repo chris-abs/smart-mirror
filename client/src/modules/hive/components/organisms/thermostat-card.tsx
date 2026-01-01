@@ -2,6 +2,7 @@ import { useState, useMemo } from "react";
 
 import { Skeleton } from "@/components/ui/skeleton";
 import { IconButton } from "@/components/atoms/icon-button";
+import { CircularTempIndicator } from "../molecules/circular-temp-indicator";
 import { useHiveDevices, useHiveStatus, useSetTemperature } from "../../queries";
 
 export function ThermostatCard() {
@@ -30,32 +31,48 @@ export function ThermostatCard() {
   const handleIncreaseTemp = () => {
     if (!primaryDevice) return;
     const currentTarget = targetTemp ?? 20;
-    const newTemp = Math.min(30, currentTarget + 0.5);
-    setTemperatureMutation.mutate({
-      deviceId: primaryDevice.id,
-      temperature: newTemp,
-    });
+    const newTemp = Math.min(30, Math.round((currentTarget + 0.5) * 10) / 10);
+    setTemperatureMutation.mutate(
+      {
+        deviceId: primaryDevice.id,
+        temperature: newTemp,
+      },
+      {
+        onSuccess: () => {
+          // Optimistically update the query cache
+          if (status) {
+            // The query will refetch automatically due to invalidation
+          }
+        },
+      }
+    );
   };
 
   const handleDecreaseTemp = () => {
     if (!primaryDevice) return;
     const currentTarget = targetTemp ?? 20;
-    const newTemp = Math.max(5, currentTarget - 0.5);
-    setTemperatureMutation.mutate({
-      deviceId: primaryDevice.id,
-      temperature: newTemp,
-    });
+    const newTemp = Math.max(5, Math.round((currentTarget - 0.5) * 10) / 10);
+    setTemperatureMutation.mutate(
+      {
+        deviceId: primaryDevice.id,
+        temperature: newTemp,
+      },
+      {
+        onSuccess: () => {
+          // The query will refetch automatically due to invalidation
+        },
+      }
+    );
   };
 
   if (isLoading && !status) {
     return (
       <div className="flex items-stretch gap-3">
-        <div className="rounded-xl border border-white/10 p-4 bg-white/5 flex-1">
-          <div className="text-xs uppercase tracking-[0.2em] opacity-60 mb-3">
+        <div className="rounded-xl border border-white/10 p-4 bg-white/5 flex-1 flex items-center gap-4">
+          <div className="text-xs uppercase tracking-[0.2em] opacity-60">
             Thermostat
           </div>
-          <Skeleton className="h-12 w-24 mb-2" />
-          <Skeleton className="h-4 w-32" />
+          <Skeleton className="h-24 w-24 rounded-full" />
         </div>
       </div>
     );
@@ -77,16 +94,11 @@ export function ThermostatCard() {
   return (
     <div className="flex items-stretch gap-3">
       {/* Main thermostat card */}
-      <div className="rounded-xl border border-white/10 p-4 bg-white/5 flex-1">
-        <div className="text-xs uppercase tracking-[0.2em] opacity-60 mb-3">
+      <div className="rounded-xl border border-white/10 p-4 bg-white/5 flex-1 flex items-center gap-4 min-h-[120px]">
+        <div className="text-xs uppercase tracking-[0.2em] opacity-60">
           Thermostat
         </div>
-        <div>
-          <div className="text-3xl font-semibold leading-none">
-            {currentTemp !== null ? `${currentTemp}°` : "--°"}
-          </div>
-          <div className="text-sm opacity-80 mt-1">Current</div>
-        </div>
+        <CircularTempIndicator temperature={currentTemp} size={100} />
       </div>
 
       {/* Expand/Collapse button - matches card height */}
