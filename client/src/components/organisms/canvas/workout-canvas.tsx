@@ -54,11 +54,8 @@ export function WorkoutCanvas() {
             {/* Center column - main workout content */}
           </section>
 
-          <section className="h-full flex flex-col">
-            <div className="flex-1"></div>
-            <div className="mt-auto">
-              <WorkoutPanel />
-            </div>
+          <section className="h-full">
+            {/* Right column - can add more components here */}
           </section>
         </div>
 
@@ -68,7 +65,9 @@ export function WorkoutCanvas() {
               <WorkoutStreak />
             </div>
             <div></div>
-            <div></div>
+            <div>
+              <WorkoutPanel />
+            </div>
           </div>
         </div>
       </main>

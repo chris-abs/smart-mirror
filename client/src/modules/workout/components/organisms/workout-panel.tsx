@@ -27,9 +27,9 @@ export function WorkoutPanel() {
         </div>
         <Skeleton className="h-10 w-full" />
         <div className="flex justify-center gap-4">
-          <Skeleton className="h-16 w-16 rounded-full" />
-          <Skeleton className="h-16 w-16 rounded-full" />
-          <Skeleton className="h-16 w-16 rounded-full" />
+          <Skeleton className="h-12 w-12 rounded-full" />
+          <Skeleton className="h-12 w-12 rounded-full" />
+          <Skeleton className="h-12 w-12 rounded-full" />
         </div>
       </div>
     );
@@ -67,24 +67,24 @@ export function WorkoutPanel() {
 
       <div className="flex justify-center gap-6">
         <div className="flex flex-col items-center gap-2">
-          <div className="w-16 h-16 rounded-full border-2 border-white/30 bg-white/5 flex items-center justify-center">
-            <span className="text-2xl font-bold">{daily}</span>
+          <div className="w-12 h-12 rounded-full border-2 border-white/30 bg-white/5 flex items-center justify-center">
+            <span className="text-sm font-semibold">{daily}</span>
           </div>
           <span className="text-xs opacity-60 uppercase tracking-widest">
             Daily
           </span>
         </div>
         <div className="flex flex-col items-center gap-2">
-          <div className="w-16 h-16 rounded-full border-2 border-white/30 bg-white/5 flex items-center justify-center">
-            <span className="text-2xl font-bold">{weekly}</span>
+          <div className="w-12 h-12 rounded-full border-2 border-white/30 bg-white/5 flex items-center justify-center">
+            <span className="text-sm font-semibold">{weekly}</span>
           </div>
           <span className="text-xs opacity-60 uppercase tracking-widest">
             Weekly
           </span>
         </div>
         <div className="flex flex-col items-center gap-2">
-          <div className="w-16 h-16 rounded-full border-2 border-white/30 bg-white/5 flex items-center justify-center">
-            <span className="text-2xl font-bold">{monthly}</span>
+          <div className="w-12 h-12 rounded-full border-2 border-white/30 bg-white/5 flex items-center justify-center">
+            <span className="text-sm font-semibold">{monthly}</span>
           </div>
           <span className="text-xs opacity-60 uppercase tracking-widest">
             Monthly
