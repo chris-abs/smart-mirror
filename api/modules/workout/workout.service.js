@@ -93,7 +93,7 @@ export async function getWorkoutCounts() {
   }
 
   const startOfWeek = new Date(now);
-  const dayOfWeek = startOfWeek.getDay(); // 0 = Sunday, 1 = Monday
+  const dayOfWeek = startOfWeek.getDay();
   const daysFromMonday = dayOfWeek === 0 ? 6 : dayOfWeek - 1;
   startOfWeek.setDate(startOfWeek.getDate() - daysFromMonday);
   startOfWeek.setHours(0, 1, 0, 0);
