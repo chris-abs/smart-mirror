@@ -6,32 +6,52 @@ import { dirname } from "path";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
-const DATA_FILE = join(__dirname, "workout-data.json");
+const DAILY_EXERCISE_FILE = join(__dirname, "daily-exercise-data.json");
+const WORKOUT_DATA_FILE = join(__dirname, "workout-data.json");
 
-const DEFAULT_DATA = {
+const DEFAULT_DAILY_EXERCISE = {
   streak: 0,
   lastWorkoutDate: null,
+};
+
+const DEFAULT_WORKOUT_DATA = {
   workouts: [],
 };
 
-async function readWorkoutData() {
+async function readDailyExerciseData() {
   try {
-    const data = await readFile(DATA_FILE, "utf-8");
+    const data = await readFile(DAILY_EXERCISE_FILE, "utf-8");
     return JSON.parse(data);
   } catch (error) {
     if (error.code === "ENOENT") {
-      return { ...DEFAULT_DATA };
+      return { ...DEFAULT_DAILY_EXERCISE };
+    }
+    throw error;
+  }
+}
+
+async function writeDailyExerciseData(data) {
+  await writeFile(DAILY_EXERCISE_FILE, JSON.stringify(data, null, 2), "utf-8");
+}
+
+async function readWorkoutData() {
+  try {
+    const data = await readFile(WORKOUT_DATA_FILE, "utf-8");
+    return JSON.parse(data);
+  } catch (error) {
+    if (error.code === "ENOENT") {
+      return { ...DEFAULT_WORKOUT_DATA };
     }
     throw error;
   }
 }
 
 async function writeWorkoutData(data) {
-  await writeFile(DATA_FILE, JSON.stringify(data, null, 2), "utf-8");
+  await writeFile(WORKOUT_DATA_FILE, JSON.stringify(data, null, 2), "utf-8");
 }
 
 export async function getWorkoutStreak() {
-  const data = await readWorkoutData();
+  const data = await readDailyExerciseData();
   return {
     streak: data.streak || 0,
     lastWorkoutDate: data.lastWorkoutDate || null,
@@ -39,7 +59,7 @@ export async function getWorkoutStreak() {
 }
 
 export async function recordWorkout() {
-  const data = await readWorkoutData();
+  const data = await readDailyExerciseData();
   const today = new Date();
   today.setHours(0, 0, 0, 0);
 
@@ -65,18 +85,17 @@ export async function recordWorkout() {
   }
 
   const updatedData = {
-    ...data,
     streak: newStreak,
     lastWorkoutDate,
   };
 
-  await writeWorkoutData(updatedData);
+  await writeDailyExerciseData(updatedData);
   return updatedData;
 }
 
 export async function resetWorkoutStreak() {
-  const resetData = { ...DEFAULT_DATA };
-  await writeWorkoutData(resetData);
+  const resetData = { ...DEFAULT_DAILY_EXERCISE };
+  await writeDailyExerciseData(resetData);
   return resetData;
 }
 
@@ -147,10 +166,11 @@ export async function recordActualWorkout() {
   const workouts = data.workouts || [];
 
   workouts.push(timestamp);
-  workouts.sort();
+  workouts.sort((a, b) => {
+    return new Date(a).getTime() - new Date(b).getTime();
+  });
 
   const updatedData = {
-    ...data,
     workouts,
   };
 
