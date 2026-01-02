@@ -84,34 +84,52 @@ export async function getWorkoutCounts() {
   const data = await readWorkoutData();
   const workouts = data.workouts || [];
 
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
+  const now = new Date();
 
-  const startOfWeek = new Date(today);
-  startOfWeek.setDate(today.getDate() - today.getDay()); // Sunday
-  startOfWeek.setHours(0, 0, 0, 0);
+  const dailyStart = new Date(now);
+  dailyStart.setHours(0, 1, 0, 0);
+  if (now < dailyStart) {
+    dailyStart.setDate(dailyStart.getDate() - 1);
+  }
 
-  const startOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
-  startOfMonth.setHours(0, 0, 0, 0);
+  const startOfWeek = new Date(now);
+  const dayOfWeek = startOfWeek.getDay(); // 0 = Sunday, 1 = Monday
+  const daysFromMonday = dayOfWeek === 0 ? 6 : dayOfWeek - 1;
+  startOfWeek.setDate(startOfWeek.getDate() - daysFromMonday);
+  startOfWeek.setHours(0, 1, 0, 0);
+  if (now < startOfWeek) {
+    startOfWeek.setDate(startOfWeek.getDate() - 7);
+  }
 
-  const workoutDates = workouts.map((date) => {
-    const d = new Date(date);
-    d.setHours(0, 0, 0, 0);
-    return d;
-  });
+  const startOfMonth = new Date(
+    now.getFullYear(),
+    now.getMonth(),
+    1,
+    0,
+    1,
+    0,
+    0
+  );
+  if (now < startOfMonth) {
+    startOfMonth.setMonth(startOfMonth.getMonth() - 1);
+  }
 
-  const daily = workoutDates.filter(
-    (d) => d.getTime() === today.getTime()
+  const workoutTimestamps = workouts.map((timestamp) => new Date(timestamp));
+
+  const daily = workoutTimestamps.filter(
+    (d) => d.getTime() >= dailyStart.getTime()
   ).length;
-  const weekly = workoutDates.filter(
+  const weekly = workoutTimestamps.filter(
     (d) => d.getTime() >= startOfWeek.getTime()
   ).length;
-  const monthly = workoutDates.filter(
+  const monthly = workoutTimestamps.filter(
     (d) => d.getTime() >= startOfMonth.getTime()
   ).length;
 
   const lastWorkoutDate =
-    workouts.length > 0 ? workouts[workouts.length - 1] : null;
+    workouts.length > 0
+      ? new Date(workouts[workouts.length - 1]).toISOString().split("T")[0]
+      : null;
 
   return {
     daily,
@@ -123,16 +141,13 @@ export async function getWorkoutCounts() {
 
 export async function recordActualWorkout() {
   const data = await readWorkoutData();
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
-  const todayStr = today.toISOString().split("T")[0];
+  const now = new Date();
+  const timestamp = now.toISOString();
 
   const workouts = data.workouts || [];
 
-  if (!workouts.includes(todayStr)) {
-    workouts.push(todayStr);
-    workouts.sort();
-  }
+  workouts.push(timestamp);
+  workouts.sort();
 
   const updatedData = {
     ...data,
