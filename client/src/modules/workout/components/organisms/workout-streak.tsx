@@ -53,7 +53,7 @@ export function WorkoutStreak() {
     <div className="rounded-xl border border-white/10 p-6 bg-white/5 flex flex-col gap-6 relative">
       <div className="flex justify-between items-start">
         <div className="text-xs uppercase tracking-[0.2em] opacity-60">
-          Daily Exercise Streak
+        Daily Exercise Streak
         </div>
         {streak > 0 && (
           <IconButton
@@ -110,12 +110,12 @@ export function WorkoutStreak() {
           ) : isToday ? (
             <>
               <CheckCircle2 className="w-4 h-4" />
-              <span>Workout recorded today</span>
+              <span>Exercises completed today</span>
             </>
           ) : (
             <>
               <CheckCircle2 className="w-4 h-4" />
-              <span>Record Workout</span>
+              <span>Record Exercises</span>
             </>
           )}
         </button>
@@ -149,7 +149,7 @@ export function WorkoutStreak() {
 
       {lastWorkoutDate && (
         <div className="text-xs opacity-40 text-center">
-          Last workout: {new Date(lastWorkoutDate).toLocaleDateString()}
+          Last completed: {new Date(lastWorkoutDate).toLocaleDateString()}
         </div>
       )}
     </div>

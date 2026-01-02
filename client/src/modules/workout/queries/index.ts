@@ -1,7 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 
 import { apiGet, apiPost } from "../../../lib/api";
-import type { WorkoutStreak } from "../../../lib/types/workout";
+import type { WorkoutStreak, WorkoutCounts } from "../../../lib/types/workout";
 
 export const workoutKey = ["workout"] as const;
 
@@ -39,6 +39,30 @@ export function useResetWorkoutStreak() {
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: [...workoutKey, "streak"],
+      });
+    },
+  });
+}
+
+export function useWorkoutCounts() {
+  return useQuery<WorkoutCounts>({
+    queryKey: [...workoutKey, "counts"],
+    queryFn: () => apiGet<WorkoutCounts>("/api/workout/counts"),
+    refetchOnWindowFocus: false,
+    staleTime: 60 * 1000,
+  });
+}
+
+export function useRecordActualWorkout() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: () => {
+      return apiPost<WorkoutCounts>("/api/workout/record-actual");
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: [...workoutKey, "counts"],
       });
     },
   });
