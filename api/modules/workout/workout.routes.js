@@ -3,6 +3,8 @@ import {
   getWorkoutStreak,
   recordWorkout,
   resetWorkoutStreak,
+  getWorkoutCounts,
+  recordActualWorkout,
 } from "./workout.service.js";
 
 const router = Router();
@@ -39,6 +41,30 @@ router.post("/reset", async (_req, res) => {
     console.error("[Workout] reset error:", err);
     res.status(500).json({
       error: err.message || "Failed to reset workout streak",
+    });
+  }
+});
+
+router.get("/counts", async (_req, res) => {
+  try {
+    const data = await getWorkoutCounts();
+    res.json(data);
+  } catch (err) {
+    console.error("[Workout] counts error:", err);
+    res.status(500).json({
+      error: err.message || "Failed to get workout counts",
+    });
+  }
+});
+
+router.post("/record-actual", async (_req, res) => {
+  try {
+    const data = await recordActualWorkout();
+    res.json(data);
+  } catch (err) {
+    console.error("[Workout] record-actual error:", err);
+    res.status(500).json({
+      error: err.message || "Failed to record workout",
     });
   }
 });

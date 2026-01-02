@@ -11,6 +11,7 @@ const DATA_FILE = join(__dirname, "workout-data.json");
 const DEFAULT_DATA = {
   streak: 0,
   lastWorkoutDate: null,
+  workouts: [],
 };
 
 async function readWorkoutData() {
@@ -64,6 +65,7 @@ export async function recordWorkout() {
   }
 
   const updatedData = {
+    ...data,
     streak: newStreak,
     lastWorkoutDate,
   };
@@ -78,3 +80,65 @@ export async function resetWorkoutStreak() {
   return resetData;
 }
 
+export async function getWorkoutCounts() {
+  const data = await readWorkoutData();
+  const workouts = data.workouts || [];
+
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
+  const startOfWeek = new Date(today);
+  startOfWeek.setDate(today.getDate() - today.getDay()); // Sunday
+  startOfWeek.setHours(0, 0, 0, 0);
+
+  const startOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
+  startOfMonth.setHours(0, 0, 0, 0);
+
+  const workoutDates = workouts.map((date) => {
+    const d = new Date(date);
+    d.setHours(0, 0, 0, 0);
+    return d;
+  });
+
+  const daily = workoutDates.filter(
+    (d) => d.getTime() === today.getTime()
+  ).length;
+  const weekly = workoutDates.filter(
+    (d) => d.getTime() >= startOfWeek.getTime()
+  ).length;
+  const monthly = workoutDates.filter(
+    (d) => d.getTime() >= startOfMonth.getTime()
+  ).length;
+
+  const lastWorkoutDate =
+    workouts.length > 0 ? workouts[workouts.length - 1] : null;
+
+  return {
+    daily,
+    weekly,
+    monthly,
+    lastWorkoutDate,
+  };
+}
+
+export async function recordActualWorkout() {
+  const data = await readWorkoutData();
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const todayStr = today.toISOString().split("T")[0];
+
+  const workouts = data.workouts || [];
+
+  if (!workouts.includes(todayStr)) {
+    workouts.push(todayStr);
+    workouts.sort();
+  }
+
+  const updatedData = {
+    ...data,
+    workouts,
+  };
+
+  await writeWorkoutData(updatedData);
+  return getWorkoutCounts();
+}
