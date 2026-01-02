@@ -21,11 +21,12 @@ export function WorkoutPanel() {
 
   if (isLoading) {
     return (
-      <div className="rounded-xl border border-white/10 p-6 bg-white/5 flex flex-col items-center gap-4 min-h-[200px]">
+      <div className="rounded-xl border border-white/10 p-6 bg-white/5 flex flex-col gap-6 min-h-[200px]">
         <div className="text-xs uppercase tracking-[0.2em] opacity-60">
           Workouts Tracked
         </div>
-        <div className="flex gap-4">
+        <Skeleton className="h-10 w-full" />
+        <div className="flex justify-center gap-4">
           <Skeleton className="h-16 w-16 rounded-full" />
           <Skeleton className="h-16 w-16 rounded-full" />
           <Skeleton className="h-16 w-16 rounded-full" />
@@ -34,64 +35,26 @@ export function WorkoutPanel() {
     );
   }
 
-  const isToday = lastWorkoutDate
-    ? new Date(lastWorkoutDate).toDateString() === new Date().toDateString()
-    : false;
-
   return (
     <div className="rounded-xl border border-white/10 p-6 bg-white/5 flex flex-col gap-6">
       <div className="text-xs uppercase tracking-[0.2em] opacity-60">
         Workouts Tracked
       </div>
 
-      <div className="flex justify-center gap-6">
-        <div className="flex flex-col items-center gap-2">
-          <div className="w-16 h-16 rounded-full border-2 border-white/30 bg-white/5 flex items-center justify-center">
-            <span className="text-2xl font-bold">{daily}</span>
-          </div>
-          <span className="text-xs opacity-60 uppercase tracking-[0.1em]">
-            Daily
-          </span>
-        </div>
-        <div className="flex flex-col items-center gap-2">
-          <div className="w-16 h-16 rounded-full border-2 border-white/30 bg-white/5 flex items-center justify-center">
-            <span className="text-2xl font-bold">{weekly}</span>
-          </div>
-          <span className="text-xs opacity-60 uppercase tracking-[0.1em]">
-            Weekly
-          </span>
-        </div>
-        <div className="flex flex-col items-center gap-2">
-          <div className="w-16 h-16 rounded-full border-2 border-white/30 bg-white/5 flex items-center justify-center">
-            <span className="text-2xl font-bold">{monthly}</span>
-          </div>
-          <span className="text-xs opacity-60 uppercase tracking-[0.1em]">
-            Monthly
-          </span>
-        </div>
-      </div>
-
       <div className="flex flex-col gap-3 w-full">
         <button
           onClick={handleRecordWorkout}
-          disabled={recordWorkoutMutation.isPending || isToday}
+          disabled={recordWorkoutMutation.isPending}
           className={`px-4 py-2 rounded-lg border transition-all ${
-            isToday
+            recordWorkoutMutation.isPending
               ? "border-white/20 bg-white/5 opacity-50 cursor-not-allowed"
-              : recordWorkoutMutation.isPending
-                ? "border-white/20 bg-white/5 opacity-50 cursor-not-allowed"
-                : "border-white/30 bg-white/10 hover:bg-white/15 active:bg-white/20"
+              : "border-white/30 bg-white/10 hover:bg-white/15 active:bg-white/20"
           } flex items-center justify-center gap-2`}
         >
           {recordWorkoutMutation.isPending ? (
             <>
               <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
               <span>Recording...</span>
-            </>
-          ) : isToday ? (
-            <>
-              <CheckCircle2 className="w-4 h-4" />
-              <span>Workout recorded today</span>
             </>
           ) : (
             <>
@@ -100,6 +63,33 @@ export function WorkoutPanel() {
             </>
           )}
         </button>
+      </div>
+
+      <div className="flex justify-center gap-6">
+        <div className="flex flex-col items-center gap-2">
+          <div className="w-16 h-16 rounded-full border-2 border-white/30 bg-white/5 flex items-center justify-center">
+            <span className="text-2xl font-bold">{daily}</span>
+          </div>
+          <span className="text-xs opacity-60 uppercase tracking-widest">
+            Daily
+          </span>
+        </div>
+        <div className="flex flex-col items-center gap-2">
+          <div className="w-16 h-16 rounded-full border-2 border-white/30 bg-white/5 flex items-center justify-center">
+            <span className="text-2xl font-bold">{weekly}</span>
+          </div>
+          <span className="text-xs opacity-60 uppercase tracking-widest">
+            Weekly
+          </span>
+        </div>
+        <div className="flex flex-col items-center gap-2">
+          <div className="w-16 h-16 rounded-full border-2 border-white/30 bg-white/5 flex items-center justify-center">
+            <span className="text-2xl font-bold">{monthly}</span>
+          </div>
+          <span className="text-xs opacity-60 uppercase tracking-widest">
+            Monthly
+          </span>
+        </div>
       </div>
 
       {lastWorkoutDate && (
