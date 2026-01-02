@@ -59,13 +59,13 @@ export function WorkoutCanvas() {
           </section>
         </div>
 
-        <div className="mt-auto pt-6 w-full">
+        <div className="mt-auto w-full">
           <div className="grid gap-6" style={{ gridTemplateColumns: 'minmax(0, 400px) 1fr minmax(0, 400px)' }}>
-            <div>
+            <div className="h-full">
               <WorkoutStreak />
             </div>
             <div></div>
-            <div>
+            <div className="h-full">
               <WorkoutPanel />
             </div>
           </div>
