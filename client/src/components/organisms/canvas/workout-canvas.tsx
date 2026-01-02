@@ -60,12 +60,12 @@ export function WorkoutCanvas() {
         </div>
 
         <div className="mt-auto w-full">
-          <div className="grid gap-6" style={{ gridTemplateColumns: 'minmax(0, 400px) 1fr minmax(0, 400px)' }}>
-            <div className="h-full">
+          <div className="grid gap-6 items-end" style={{ gridTemplateColumns: 'minmax(0, 400px) 1fr minmax(0, 400px)' }}>
+            <div>
               <WorkoutStreak />
             </div>
             <div></div>
-            <div className="h-full">
+            <div>
               <WorkoutPanel />
             </div>
           </div>

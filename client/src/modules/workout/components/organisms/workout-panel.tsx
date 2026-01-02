@@ -1,69 +1,17 @@
-import { useEffect, useRef } from "react";
 import { CheckCircle2 } from "lucide-react";
-import { useQueryClient } from "@tanstack/react-query";
 
 import { Skeleton } from "@/components/ui/skeleton";
 import {
   useWorkoutCounts,
   useRecordActualWorkout,
-  workoutKey,
 } from "../../queries";
+import { useWorkoutCountResetChecker } from "../../utils/reset-checker";
 
 export function WorkoutPanel() {
+  useWorkoutCountResetChecker();
+  
   const { data: countsData, isLoading } = useWorkoutCounts();
   const recordWorkoutMutation = useRecordActualWorkout();
-  const queryClient = useQueryClient();
-  const lastCheckedRef = useRef<{ day: number; week: number; month: number } | null>(null);
-
-  useEffect(() => {
-    const checkAndRefetch = () => {
-      const now = new Date();
-      
-      const today = new Date(now);
-      today.setHours(0, 1, 0, 0);
-      if (now < today) {
-        today.setDate(today.getDate() - 1);
-      }
-      
-      const thisWeek = new Date(now);
-      const dayOfWeek = thisWeek.getDay();
-      const daysFromMonday = dayOfWeek === 0 ? 6 : dayOfWeek - 1;
-      thisWeek.setDate(thisWeek.getDate() - daysFromMonday);
-      thisWeek.setHours(0, 1, 0, 0);
-      if (now < thisWeek) {
-        thisWeek.setDate(thisWeek.getDate() - 7);
-      }
-      
-      const thisMonth = new Date(now.getFullYear(), now.getMonth(), 1, 0, 1, 0, 0);
-      if (now < thisMonth) {
-        thisMonth.setMonth(thisMonth.getMonth() - 1);
-      }
-      
-      const currentPeriods = {
-        day: today.getTime(),
-        week: thisWeek.getTime(),
-        month: thisMonth.getTime(),
-      };
-      
-      if (!lastCheckedRef.current || 
-          lastCheckedRef.current.day !== currentPeriods.day ||
-          lastCheckedRef.current.week !== currentPeriods.week ||
-          lastCheckedRef.current.month !== currentPeriods.month) {
-        queryClient.invalidateQueries({
-          queryKey: [...workoutKey, "counts"],
-        });
-        lastCheckedRef.current = currentPeriods;
-      }
-    };
-    
-    checkAndRefetch();
-    
-    const intervalId = setInterval(checkAndRefetch, 60 * 1000);
-    
-    return () => {
-      clearInterval(intervalId);
-    };
-  }, [queryClient]);
 
   const daily = countsData?.daily ?? 0;
   const weekly = countsData?.weekly ?? 0;
@@ -91,7 +39,7 @@ export function WorkoutPanel() {
   }
 
   return (
-    <div className="rounded-xl border border-white/10 p-6 bg-white/5 flex flex-col gap-6 h-full">
+    <div className="rounded-xl border border-white/10 p-6 bg-white/5 flex flex-col gap-6">
       <div className="text-xs uppercase tracking-[0.2em] opacity-60">
         Workouts Tracked
       </div>
@@ -120,7 +68,7 @@ export function WorkoutPanel() {
         </button>
       </div>
 
-      <div className="flex justify-center gap-6 mt-auto">
+      <div className="flex justify-center gap-6">
         <div className="flex flex-col items-center gap-2">
           <div className="w-12 h-12 rounded-full border-2 border-white/30 bg-white/5 flex items-center justify-center">
             <span className="text-sm font-semibold">{daily}</span>

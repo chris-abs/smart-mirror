@@ -50,7 +50,7 @@ export function WorkoutStreak() {
     : false;
 
   return (
-    <div className="rounded-xl border border-white/10 p-6 bg-white/5 flex flex-col gap-6 relative h-full">
+    <div className="rounded-xl border border-white/10 p-6 bg-white/5 flex flex-col gap-6 relative">
       <div className="flex justify-between items-start">
         <div className="text-xs uppercase tracking-[0.2em] opacity-60">
         Daily Exercise Streak
@@ -121,7 +121,7 @@ export function WorkoutStreak() {
         </button>
       </div>
 
-      <div className="flex flex-col gap-2 mt-auto">
+      <div className="flex flex-col gap-2">
         <div className="text-xs flex justify-center uppercase tracking-[0.2em] opacity-60 mb-1">
           Daily Requirements
         </div>
