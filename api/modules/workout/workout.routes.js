@@ -1,4 +1,5 @@
 import { Router } from "express";
+
 import {
   getWorkoutStreak,
   recordWorkout,
@@ -70,4 +71,3 @@ router.post("/record-actual", async (_req, res) => {
 });
 
 export default router;
-

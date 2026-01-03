@@ -39,7 +39,7 @@ export async function getCurrentWeather(lat, lon) {
       icon: data.weather[0]?.icon || null,
       windSpeed: data.wind?.speed || 0,
       windDirection: data.wind?.deg || null,
-      visibility: data.visibility ? data.visibility / 1000 : null, // Convert to km
+      visibility: data.visibility ? data.visibility / 1000 : null,
       cloudiness: data.clouds?.all || 0,
       sunrise: data.sys?.sunrise
         ? new Date(data.sys.sunrise * 1000).toISOString()
