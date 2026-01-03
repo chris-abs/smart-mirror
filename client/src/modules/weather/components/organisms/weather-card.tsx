@@ -1,8 +1,8 @@
 import { useMemo } from "react";
 
 import { Skeleton } from "@/components/ui/skeleton";
-import { useCurrentWeather } from "../../queries";
 import { useLocation, getDefaultWeatherLocation } from "../../../../hooks/use-location";
+import { useCurrentWeather } from "../../queries";
 import type { WeatherQueryParams } from "../../../../lib/types/weather";
 
 export function WeatherCard() {
@@ -26,7 +26,7 @@ export function WeatherCard() {
 
   if ((locationLoading || isLoading) && !data) {
     return (
-      <div className="rounded-xl border border-white/10 p-4 bg-white/5 min-h-[200px]">
+      <div className="rounded-xl border border-white/10 p-4 bg-white/5 min-h-50">
         <div className="text-xs uppercase tracking-[0.2em] opacity-60 mb-3">
           Weather
         </div>
@@ -83,7 +83,7 @@ export function WeatherCard() {
   }
 
   return (
-    <div className="rounded-xl border border-white/10 p-4 bg-white/5 min-h-[200px]">
+    <div className="rounded-xl border border-white/10 p-4 bg-white/5 min-h-50">
       <div className="text-xs uppercase tracking-[0.2em] opacity-60 mb-3">
         Weather
       </div>

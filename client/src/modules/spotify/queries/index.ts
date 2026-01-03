@@ -1,4 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
+
 import { apiGet, apiPost } from "../../../lib/api";
 import type { NowPlaying } from "../../../lib/types/spotify";
 
@@ -10,8 +11,6 @@ export function useSpotifyNowPlaying() {
     queryFn: () => apiGet<NowPlaying>("/api/spotify/now-playing"),
     refetchInterval: (query) => {
       const data = query.state.data;
-      // If playing, poll every 2 seconds to update progress bar
-      // If paused or nothing playing, poll every 10 seconds
       if (data?.isPlaying) {
         return 2000;
       }

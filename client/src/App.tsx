@@ -1,8 +1,8 @@
-import { NavigationProvider } from "./contexts";
-import { useNavigation } from "./hooks/use-navigation";
 import { Layout } from "./components/organisms/layout";
 import { HomeCanvas } from "./components/organisms/canvas/home-canvas";
 import { WorkoutCanvas } from "./components/organisms/canvas/workout-canvas";
+import { NavigationProvider } from "./contexts";
+import { useNavigation } from "./hooks/use-navigation";
 
 function AppContent() {
   const { currentRoute } = useNavigation();

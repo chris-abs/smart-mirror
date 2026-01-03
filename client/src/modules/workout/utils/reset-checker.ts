@@ -1,5 +1,6 @@
 import { useEffect, useRef } from "react";
 import { useQueryClient } from "@tanstack/react-query";
+
 import { workoutKey } from "../queries";
 
 interface PeriodBoundaries {

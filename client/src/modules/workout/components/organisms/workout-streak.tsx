@@ -35,7 +35,7 @@ export function WorkoutStreak() {
 
   if (isLoading) {
     return (
-      <div className="rounded-xl border border-white/10 p-6 bg-white/5 flex flex-col items-center gap-4 min-h-[200px]">
+      <div className="rounded-xl border border-white/10 p-6 bg-white/5 flex flex-col items-center gap-4 min-h-50">
         <div className="text-xs uppercase tracking-[0.2em] opacity-60">
           Daily Exercise Streak
         </div>

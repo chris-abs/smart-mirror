@@ -1,10 +1,10 @@
 import { useEffect, useState, useRef, useMemo } from "react";
 
 import { Skeleton } from "@/components/ui/skeleton";
+import { ArticleProgressLine } from "../molecules/article-progress-line";
+import { useLocation } from "../../../../hooks/use-location";
 import { useBreakingNews, useUFCNews } from "../../queries";
 import { getTimeAgo, filterBettingArticles } from "../../utils";
-import { useLocation } from "../../../../hooks/use-location";
-import { ArticleProgressLine } from "../molecules/article-progress-line";
 
 const SCROLL_INTERVAL = 10000;
 
@@ -100,7 +100,7 @@ export function NewsCard() {
         <div className="text-xs uppercase tracking-[0.2em] opacity-60 mb-3">
           News
         </div>
-        <div className="flex flex-col gap-2 min-h-[120px]">
+        <div className="flex flex-col gap-2 min-h-30">
           <Skeleton className="h-14 w-full mb-2" />
           <Skeleton className="h-10 w-full" />
           <Skeleton className="h-4 w-3/4 mt-2" />

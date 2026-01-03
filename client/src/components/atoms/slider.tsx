@@ -1,4 +1,5 @@
 import * as React from "react";
+
 import { cn } from "../../lib/utils";
 
 type SliderProps = Omit<
@@ -79,7 +80,7 @@ export function Slider({
           "[&::-webkit-slider-thumb]:bg-black",
           "[&::-webkit-slider-thumb]:shadow-sm",
           "[&::-webkit-slider-thumb]:transition-[box-shadow,transform]",
-          "[&::-webkit-slider-thumb]:-mt-[5px]",
+          "[&::-webkit-slider-thumb]:-mt-1.25",
           "hover:[&::-webkit-slider-thumb]:ring-4",
           "hover:[&::-webkit-slider-thumb]:ring-white/30",
           "focus-visible:[&::-webkit-slider-thumb]:ring-4",

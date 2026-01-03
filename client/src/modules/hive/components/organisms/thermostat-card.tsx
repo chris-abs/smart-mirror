@@ -143,9 +143,9 @@ export function ThermostatCard() {
       </div>
 
       <div
-        className={`rounded-r-xl border border-white/10 p-4 bg-white/5 flex flex-col items-center justify-between gap-4 min-h-[140px] transition-all duration-300 ease-in-out ml-1.5 ${
+        className={`rounded-r-xl border border-white/10 p-4 bg-white/5 flex flex-col items-center justify-between gap-4 min-h-35 transition-all duration-300 ease-in-out ml-1.5 ${
           isExpanded
-            ? "w-[120px] opacity-100 translate-x-0"
+            ? "w-30 opacity-100 translate-x-0"
             : "w-0 opacity-0 -translate-x-4 overflow-hidden"
         }`}
       >

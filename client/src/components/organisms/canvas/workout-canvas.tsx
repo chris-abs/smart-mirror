@@ -64,7 +64,7 @@ export function WorkoutCanvas() {
             <div>
               <WorkoutStreak />
             </div>
-            <div></div>
+            <div />
             <div>
               <WorkoutPanel />
             </div>

@@ -1,8 +1,10 @@
 import { useEffect, useRef, useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { SkipBack, Play, Pause, SkipForward } from "lucide-react";
+
 import { IconButton } from "../../../../components/atoms/icon-button";
 import { Slider } from "../../../../components/atoms/slider";
+import { SpotifyLoadingSkeleton, SpotifyInactiveState } from "../molecules";
 import {
   spotifyNext,
   spotifyPause,
@@ -12,7 +14,6 @@ import {
   spotifyNowPlayingKey,
   useSpotifyNowPlaying,
 } from "../../queries";
-import { SpotifyLoadingSkeleton, SpotifyInactiveState } from "../molecules";
 
 export function SpotifyNowPlayingCard() {
   const [volume, setVolume] = useState(50);
@@ -72,7 +73,6 @@ export function SpotifyNowPlayingCard() {
       } else {
         await spotifyPlay();
       }
-      // Immediately refetch to get updated state
       await queryClient.invalidateQueries({ queryKey: spotifyNowPlayingKey });
     } catch (e) {
       console.error("Spotify play/pause failed", e);
@@ -82,7 +82,6 @@ export function SpotifyNowPlayingCard() {
   async function handleNext() {
     try {
       await spotifyNext();
-      // Immediately refetch to get updated state
       await queryClient.invalidateQueries({ queryKey: spotifyNowPlayingKey });
     } catch (e) {
       console.error("Spotify next failed", e);
@@ -92,7 +91,6 @@ export function SpotifyNowPlayingCard() {
   async function handlePrevious() {
     try {
       await spotifyPrevious();
-      // Immediately refetch to get updated state
       await queryClient.invalidateQueries({ queryKey: spotifyNowPlayingKey });
     } catch (e) {
       console.error("Spotify previous failed", e);
@@ -118,12 +116,12 @@ export function SpotifyNowPlayingCard() {
   }
 
   return (
-    <div className="rounded-xl border border-white/10 p-4 bg-white/5 min-h-[300px]">
+    <div className="rounded-xl border border-white/10 p-4 bg-white/5 min-h-35">
       <div className="text-xs uppercase tracking-[0.2em] opacity-60 mb-3">
         Spotify
       </div>
       <div className="grid grid-cols-2 gap-4 items-center">
-        <div className="w-full max-w-[160px] aspect-square rounded-xl bg-white/5 flex items-center justify-center overflow-hidden mx-auto">
+        <div className="w-full max-w-40 aspect-square rounded-xl bg-white/5 flex items-center justify-center overflow-hidden mx-auto">
           {track.albumArtUrl ? (
             <img
               src={track.albumArtUrl}

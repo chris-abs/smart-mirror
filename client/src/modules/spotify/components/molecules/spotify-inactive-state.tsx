@@ -8,12 +8,12 @@ type SpotifyInactiveStateProps = {
 
 export function SpotifyInactiveState({ volume }: SpotifyInactiveStateProps) {
   return (
-    <div className="rounded-xl border border-white/10 p-4 bg-white/5 min-h-[300px]">
+    <div className="rounded-xl border border-white/10 p-4 bg-white/5 min-h-75">
       <div className="text-xs uppercase tracking-[0.2em] opacity-60 mb-3">
         Spotify
       </div>
       <div className="grid grid-cols-2 gap-4 items-center">
-        <div className="w-full max-w-[160px] aspect-square rounded-xl bg-white/5 flex items-center justify-center overflow-hidden mx-auto">
+        <div className="w-full max-w-40 aspect-square rounded-xl bg-white/5 flex items-center justify-center overflow-hidden mx-auto">
           <div className="text-xs opacity-60">No art</div>
         </div>
 

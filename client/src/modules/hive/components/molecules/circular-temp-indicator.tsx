@@ -10,7 +10,6 @@ export function CircularTempIndicator({
   const radius = (size - 8) / 2;
   const circumference = 2 * Math.PI * radius;
   
-  // Calculate progress based on temperature (assuming range 5-30°C)
   const minTemp = 5;
   const maxTemp = 30;
   const temp = temperature ?? minTemp;
@@ -24,7 +23,6 @@ export function CircularTempIndicator({
         height={size}
         className="transform -rotate-90"
       >
-        {/* Background circle */}
         <circle
           cx={size / 2}
           cy={size / 2}
@@ -33,7 +31,6 @@ export function CircularTempIndicator({
           stroke="rgba(255, 255, 255, 0.1)"
           strokeWidth="4"
         />
-        {/* Progress circle */}
         <circle
           cx={size / 2}
           cy={size / 2}
@@ -53,7 +50,6 @@ export function CircularTempIndicator({
           </linearGradient>
         </defs>
       </svg>
-      {/* Temperature text */}
       <div className="absolute inset-0 flex items-center justify-center">
         <div className="text-center">
           <div className="text-3xl font-semibold leading-none">

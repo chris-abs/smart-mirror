@@ -48,19 +48,16 @@ export function useSetTemperature() {
       );
     },
     onMutate: async ({ deviceId, temperature }) => {
-      // Cancel outgoing refetches
       await queryClient.cancelQueries({
         queryKey: [...hiveKey, "status", deviceId],
       });
 
-      // Snapshot the previous value
       const previousStatus = queryClient.getQueryData<HiveHeatingStatus>([
         ...hiveKey,
         "status",
         deviceId,
       ]);
 
-      // Optimistically update to the new value
       if (previousStatus) {
         queryClient.setQueryData<HiveHeatingStatus>(
           [...hiveKey, "status", deviceId],
@@ -74,7 +71,6 @@ export function useSetTemperature() {
       return { previousStatus };
     },
     onError: (_err, variables, context) => {
-      // Rollback on error
       if (context?.previousStatus) {
         queryClient.setQueryData(
           [...hiveKey, "status", variables.deviceId],
@@ -83,7 +79,6 @@ export function useSetTemperature() {
       }
     },
     onSuccess: (_, variables) => {
-      // Refetch to ensure we have the latest data
       queryClient.invalidateQueries({
         queryKey: [...hiveKey, "status", variables.deviceId],
       });
