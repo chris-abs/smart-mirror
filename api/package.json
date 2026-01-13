@@ -4,12 +4,15 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "start": "node index.js"
+    "start": "node index.js",
+    "setup-db": "node scripts/setup-db.js",
+    "import-data": "node scripts/import-data.js"
   },
   "dependencies": {
     "cors": "^2.8.5",
     "dotenv": "^16.4.0",
     "express": "^4.18.2",
-    "node-hivehome": "^1.0.0"
+    "node-hivehome": "^1.0.0",
+    "pg": "^8.11.3"
   }
 }
