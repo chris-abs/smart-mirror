@@ -9,19 +9,18 @@ const __dirname = dirname(__filename);
 async function setupDatabase() {
   console.log("Setting up database...");
 
-  // Test connection first
   const connected = await testConnection();
   if (!connected) {
-    console.error("Failed to connect to database. Please check your DATABASE_URL.");
+    console.error(
+      "Failed to connect to database. Please check your DATABASE_URL."
+    );
     process.exit(1);
   }
 
-  // Read and execute schema
   const schemaPath = join(__dirname, "../db/schema.sql");
   const schema = await readFile(schemaPath, "utf-8");
 
   try {
-    // Execute schema (PostgreSQL will handle IF NOT EXISTS)
     await query(schema);
     console.log("✓ Database schema initialized successfully");
   } catch (error) {
