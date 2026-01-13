@@ -1,0 +1,65 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: smart-mirror-postgres
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-workout_user}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-workout_password}
+      POSTGRES_DB: ${POSTGRES_DB:-workouts}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./api/db/schema.sql:/docker-entrypoint-initdb.d/schema.sql
+    ports:
+      - "5432:5432"
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-workout_user}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  api:
+    build:
+      context: ./api
+      dockerfile: Dockerfile
+    container_name: smart-mirror-api
+    environment:
+      NODE_ENV: ${NODE_ENV:-development}
+      PORT: 3001
+      DATABASE_URL: postgresql://${POSTGRES_USER:-workout_user}:${POSTGRES_PASSWORD:-workout_password}@postgres:5432/${POSTGRES_DB:-workouts}
+      API_TOKEN: ${API_TOKEN}
+    ports:
+      - "3001:3001"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: unless-stopped
+    volumes:
+      - ./api:/app
+      - /app/node_modules
+
+  client:
+    build:
+      context: ./client
+      dockerfile: Dockerfile
+    container_name: smart-mirror-client
+    environment:
+      VITE_API_BASE: http://localhost:3001
+      VITE_API_TOKEN: ${API_TOKEN}
+    ports:
+      - "5173:5173"
+    depends_on:
+      - api
+    restart: unless-stopped
+    volumes:
+      - ./client:/app
+      - /app/node_modules
+
+volumes:
+  postgres_data:
+
+networks:
+  default:
+    name: smart-mirror-network
