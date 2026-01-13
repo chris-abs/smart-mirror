@@ -1,108 +1,89 @@
-import { readFile, writeFile } from "fs/promises";
-import { join } from "path";
-import { fileURLToPath } from "url";
-import { dirname } from "path";
+import { query } from "../../db/index.js";
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
-
-const DAILY_EXERCISE_FILE = join(__dirname, "daily-exercise-data.json");
-const WORKOUT_DATA_FILE = join(__dirname, "workout-data.json");
-
-const DEFAULT_DAILY_EXERCISE = {
-  streak: 0,
-  lastWorkoutDate: null,
-};
-
-const DEFAULT_WORKOUT_DATA = {
-  workouts: [],
-};
-
-async function readDailyExerciseData() {
-  try {
-    const data = await readFile(DAILY_EXERCISE_FILE, "utf-8");
-    return JSON.parse(data);
-  } catch (error) {
-    if (error.code === "ENOENT") {
-      return { ...DEFAULT_DAILY_EXERCISE };
-    }
-    throw error;
-  }
-}
-
-async function writeDailyExerciseData(data) {
-  await writeFile(DAILY_EXERCISE_FILE, JSON.stringify(data, null, 2), "utf-8");
-}
-
-async function readWorkoutData() {
-  try {
-    const data = await readFile(WORKOUT_DATA_FILE, "utf-8");
-    return JSON.parse(data);
-  } catch (error) {
-    if (error.code === "ENOENT") {
-      return { ...DEFAULT_WORKOUT_DATA };
-    }
-    throw error;
-  }
-}
-
-async function writeWorkoutData(data) {
-  await writeFile(WORKOUT_DATA_FILE, JSON.stringify(data, null, 2), "utf-8");
-}
-
+/**
+ * Get workout streak based on daily exercise entries
+ * Calculates consecutive days with daily exercise, counting backwards from today
+ */
 export async function getWorkoutStreak() {
-  const data = await readDailyExerciseData();
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const todayStr = today.toISOString().split("T")[0];
+
+  const result = await query(
+    `SELECT date FROM workout_entries 
+     WHERE has_daily_exercise = true 
+     ORDER BY date DESC`
+  );
+
+  if (result.rows.length === 0) {
+    return {
+      streak: 0,
+      lastWorkoutDate: null,
+    };
+  }
+
+  const lastDate = new Date(result.rows[0].date);
+  lastDate.setHours(0, 0, 0, 0);
+
+  const daysDiff = Math.floor(
+    (today.getTime() - lastDate.getTime()) / (1000 * 60 * 60 * 24)
+  );
+
+  if (daysDiff > 1) {
+    return {
+      streak: 0,
+      lastWorkoutDate: result.rows[0].date,
+    };
+  }
+
+  let streak = 0;
+  let checkDate = new Date(result.rows[0].date);
+  const dates = new Set(result.rows.map((row) => row.date));
+
+  while (true) {
+    const dateStr = checkDate.toISOString().split("T")[0];
+    if (dates.has(dateStr)) {
+      streak++;
+      checkDate.setDate(checkDate.getDate() - 1);
+    } else {
+      break;
+    }
+  }
+
   return {
-    streak: data.streak || 0,
-    lastWorkoutDate: data.lastWorkoutDate || null,
+    streak,
+    lastWorkoutDate: result.rows[0].date,
   };
 }
 
 export async function recordWorkout() {
-  const data = await readDailyExerciseData();
   const today = new Date();
   today.setHours(0, 0, 0, 0);
+  const todayStr = today.toISOString().split("T")[0];
 
-  let newStreak = 1;
-  let lastWorkoutDate = today.toISOString().split("T")[0];
+  await query(
+    `INSERT INTO workout_entries (date, has_daily_exercise, has_workout)
+     VALUES ($1, true, COALESCE((SELECT has_workout FROM workout_entries WHERE date = $1), false))
+     ON CONFLICT (date) 
+     DO UPDATE SET has_daily_exercise = true, updated_at = CURRENT_TIMESTAMP`,
+    [todayStr]
+  );
 
-  if (data.lastWorkoutDate) {
-    const lastDate = new Date(data.lastWorkoutDate);
-    lastDate.setHours(0, 0, 0, 0);
-
-    const daysDiff = Math.floor(
-      (today.getTime() - lastDate.getTime()) / (1000 * 60 * 60 * 24)
-    );
-
-    if (daysDiff === 0) {
-      newStreak = data.streak || 0;
-      lastWorkoutDate = data.lastWorkoutDate;
-    } else if (daysDiff === 1) {
-      newStreak = (data.streak || 0) + 1;
-    } else {
-      newStreak = 1;
-    }
-  }
-
-  const updatedData = {
-    streak: newStreak,
-    lastWorkoutDate,
-  };
-
-  await writeDailyExerciseData(updatedData);
-  return updatedData;
+  return getWorkoutStreak();
 }
 
 export async function resetWorkoutStreak() {
-  const resetData = { ...DEFAULT_DAILY_EXERCISE };
-  await writeDailyExerciseData(resetData);
-  return resetData;
+  await query(
+    `UPDATE workout_entries SET has_daily_exercise = false WHERE has_daily_exercise = true`
+  );
+
+  return {
+    streak: 0,
+    lastWorkoutDate: null,
+  };
 }
 
 export async function getWorkoutCounts() {
-  const data = await readWorkoutData();
-  const workouts = data.workouts || [];
-
   const now = new Date();
 
   const dailyStart = new Date(now);
@@ -133,47 +114,133 @@ export async function getWorkoutCounts() {
     startOfMonth.setMonth(startOfMonth.getMonth() - 1);
   }
 
-  const workoutTimestamps = workouts.map((timestamp) => new Date(timestamp));
+  const dailyResult = await query(
+    `SELECT COUNT(*) as count FROM workout_entries 
+     WHERE has_workout = true AND date >= $1`,
+    [dailyStart.toISOString().split("T")[0]]
+  );
 
-  const daily = workoutTimestamps.filter(
-    (d) => d.getTime() >= dailyStart.getTime()
-  ).length;
-  const weekly = workoutTimestamps.filter(
-    (d) => d.getTime() >= startOfWeek.getTime()
-  ).length;
-  const monthly = workoutTimestamps.filter(
-    (d) => d.getTime() >= startOfMonth.getTime()
-  ).length;
+  const weeklyResult = await query(
+    `SELECT COUNT(*) as count FROM workout_entries 
+     WHERE has_workout = true AND date >= $1`,
+    [startOfWeek.toISOString().split("T")[0]]
+  );
 
-  const lastWorkoutDate =
-    workouts.length > 0
-      ? new Date(workouts[workouts.length - 1]).toISOString().split("T")[0]
-      : null;
+  const monthlyResult = await query(
+    `SELECT COUNT(*) as count FROM workout_entries 
+     WHERE has_workout = true AND date >= $1`,
+    [startOfMonth.toISOString().split("T")[0]]
+  );
+
+  const lastWorkoutResult = await query(
+    `SELECT date FROM workout_entries 
+     WHERE has_workout = true 
+     ORDER BY date DESC 
+     LIMIT 1`
+  );
 
   return {
-    daily,
-    weekly,
-    monthly,
-    lastWorkoutDate,
+    daily: parseInt(dailyResult.rows[0]?.count || "0", 10),
+    weekly: parseInt(weeklyResult.rows[0]?.count || "0", 10),
+    monthly: parseInt(monthlyResult.rows[0]?.count || "0", 10),
+    lastWorkoutDate: lastWorkoutResult.rows[0]?.date || null,
   };
 }
 
 export async function recordActualWorkout() {
-  const data = await readWorkoutData();
-  const now = new Date();
-  const timestamp = now.toISOString();
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const todayStr = today.toISOString().split("T")[0];
 
-  const workouts = data.workouts || [];
+  await query(
+    `INSERT INTO workout_entries (date, has_workout, has_daily_exercise)
+     VALUES ($1, true, COALESCE((SELECT has_daily_exercise FROM workout_entries WHERE date = $1), false))
+     ON CONFLICT (date) 
+     DO UPDATE SET has_workout = true, updated_at = CURRENT_TIMESTAMP`,
+    [todayStr]
+  );
 
-  workouts.push(timestamp);
-  workouts.sort((a, b) => {
-    return new Date(a).getTime() - new Date(b).getTime();
+  return getWorkoutCounts();
+}
+
+export async function getContributionsData() {
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const oneYearAgo = new Date(today);
+  oneYearAgo.setDate(oneYearAgo.getDate() - 365);
+  const startDate = oneYearAgo.toISOString().split("T")[0];
+
+  const result = await query(
+    `SELECT date, has_workout, has_daily_exercise 
+     FROM workout_entries 
+     WHERE date >= $1 
+     ORDER BY date ASC`,
+    [startDate]
+  );
+
+  const entriesMap = new Map();
+  result.rows.forEach((row) => {
+    entriesMap.set(row.date, {
+      date: row.date,
+      has_workout: row.has_workout,
+      has_daily_exercise: row.has_daily_exercise,
+    });
   });
 
-  const updatedData = {
-    workouts,
-  };
+  const entries = [];
+  const currentDate = new Date(oneYearAgo);
+  let totalWorkouts = 0;
 
-  await writeWorkoutData(updatedData);
-  return getWorkoutCounts();
+  while (currentDate <= today) {
+    const dateStr = currentDate.toISOString().split("T")[0];
+    const entry = entriesMap.get(dateStr) || {
+      date: dateStr,
+      has_workout: false,
+      has_daily_exercise: false,
+    };
+
+    if (entry.has_workout) {
+      totalWorkouts++;
+    }
+
+    entries.push(entry);
+    currentDate.setDate(currentDate.getDate() + 1);
+  }
+
+  return {
+    entries,
+    total: totalWorkouts,
+  };
+}
+
+export async function bulkImportWorkouts(entries) {
+  if (!Array.isArray(entries) || entries.length === 0) {
+    throw new Error("Entries must be a non-empty array");
+  }
+
+  const values = entries
+    .map((entry, index) => {
+      const base = index * 3;
+      return `($${base + 1}, $${base + 2}, $${base + 3})`;
+    })
+    .join(", ");
+
+  const params = entries.flatMap((entry) => [
+    entry.date,
+    entry.has_workout || false,
+    entry.has_daily_exercise || false,
+  ]);
+
+  await query(
+    `INSERT INTO workout_entries (date, has_workout, has_daily_exercise)
+     VALUES ${values}
+     ON CONFLICT (date) 
+     DO UPDATE SET 
+       has_workout = EXCLUDED.has_workout,
+       has_daily_exercise = EXCLUDED.has_daily_exercise,
+       updated_at = CURRENT_TIMESTAMP`,
+    params
+  );
+
+  return { imported: entries.length };
 }
