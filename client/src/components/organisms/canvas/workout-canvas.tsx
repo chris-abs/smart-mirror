@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 
 import { WorkoutStreak } from "../../../modules/workout/components/organisms/workout-streak";
-import { WorkoutPanel } from "../../../modules/workout/components/organisms/workout-panel";
+import { ContributionsChart } from "../../../modules/workout/components/organisms/contributions-chart";
 import { SpotifyNowPlayingCard } from "../../../modules/spotify/components/organisms/spotify-now-playing";
 
 export function WorkoutCanvas() {
@@ -66,7 +66,7 @@ export function WorkoutCanvas() {
             </div>
             <div />
             <div>
-              <WorkoutPanel />
+              <ContributionsChart />
             </div>
           </div>
         </div>

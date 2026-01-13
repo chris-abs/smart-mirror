@@ -1,7 +1,11 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 
 import { apiGet, apiPost } from "../../../lib/api";
-import type { WorkoutStreak, WorkoutCounts } from "../../../lib/types/workout";
+import type {
+  WorkoutStreak,
+  WorkoutCounts,
+  ContributionsData,
+} from "../../../lib/types/workout";
 
 export const workoutKey = ["workout"] as const;
 
@@ -64,8 +68,19 @@ export function useRecordActualWorkout() {
       queryClient.invalidateQueries({
         queryKey: [...workoutKey, "counts"],
       });
+      queryClient.invalidateQueries({
+        queryKey: [...workoutKey, "contributions"],
+      });
     },
   });
 }
 
+export function useContributionsData() {
+  return useQuery<ContributionsData>({
+    queryKey: [...workoutKey, "contributions"],
+    queryFn: () => apiGet<ContributionsData>("/api/workout/contributions"),
+    refetchOnWindowFocus: false,
+    staleTime: 60 * 1000,
+  });
+}
 
