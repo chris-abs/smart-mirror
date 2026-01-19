@@ -77,8 +77,8 @@ export function WorkoutContributionsChart() {
   const isPending = recordWorkoutTypeMutation.isPending;
 
   const title = transformedData
-    ? `${transformedData.total} Workout${transformedData.total !== 1 ? "s" : ""} contributed over the last year`
-    : "Workouts contributed over the last year";
+    ? `${transformedData.total.toLocaleString()} workout${transformedData.total !== 1 ? "s" : ""} over the last year`
+    : "Workouts over the last year";
 
   const actionButtons = (
     <>
@@ -153,7 +153,7 @@ export function WorkoutContributionsChart() {
       title={title}
       colorScheme={COLOR_SCHEMES.blue}
       emptyMessage="No workout data available"
-      legendLabel="(1/3 / 2/3 / 3/3 workouts)"
+      legendLabel="(workouts per day)"
       actionButtons={actionButtons}
       showLegend={true}
     />

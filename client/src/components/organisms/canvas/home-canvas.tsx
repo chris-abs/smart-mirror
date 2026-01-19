@@ -1,6 +1,7 @@
 import { SpotifyNowPlayingCard } from "../../../modules/spotify/components/organisms/spotify-now-playing";
 import { WeatherCard } from "../../../modules/weather/components/organisms/weather-card";
 import { NewsCard } from "../../../modules/news/components/organisms/news-card";
+import { GitHubContributionsChart } from "../../../modules/github/components/organisms/github-contributions-chart";
 import { getGreeting } from "../../../lib/utils";
 
 const USER_NAME = "Chris";
@@ -43,7 +44,8 @@ export function HomeCanvas() {
             <SpotifyNowPlayingCard />
           </section>
 
-          <section className="h-full">
+          <section className="h-full flex flex-col gap-6">
+            <NewsCard />
           </section>
 
           <section className="h-full flex flex-col gap-6">
@@ -51,8 +53,8 @@ export function HomeCanvas() {
           </section>
         </div>
 
-        <div className="mt-auto pt-6 w-full">
-          <NewsCard />
+        <div className="mt-auto w-full flex justify-center">
+          <GitHubContributionsChart />
         </div>
       </main>
     </>
