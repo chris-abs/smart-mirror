@@ -1,9 +1,6 @@
 import { query } from "../../db/index.js";
 
-/**
- * Get workout streak based on daily exercise entries
- * Calculates consecutive days with daily exercise, counting backwards from today
- */
+
 export async function getWorkoutStreak() {
   const today = new Date();
   today.setHours(0, 0, 0, 0);
@@ -241,7 +238,6 @@ export async function getContributionsData() {
       has_class: false,
     };
 
-    // Count total number of workouts (weights, class, and dailies are separate workouts)
     if (entry.has_weights) totalWorkouts++;
     if (entry.has_class) totalWorkouts++;
     if (entry.has_daily_exercise) totalWorkouts++;
