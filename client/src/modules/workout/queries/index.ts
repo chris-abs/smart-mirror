@@ -63,12 +63,12 @@ export function useWorkoutCounts() {
   });
 }
 
-export function useRecordActualWorkout() {
+export function useRecordWorkoutType() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: () => {
-      return apiPost<WorkoutCounts>("/api/workout/record-actual");
+    mutationFn: ({ dates, type }: { dates: string[]; type: 'weights' | 'class' | 'dailies' }) => {
+      return apiPost<{ recorded: number }>("/api/workout/record-workout-type", { dates, type });
     },
     onSuccess: () => {
       queryClient.invalidateQueries({
@@ -77,23 +77,8 @@ export function useRecordActualWorkout() {
       queryClient.invalidateQueries({
         queryKey: [...workoutKey, "contributions"],
       });
-    },
-  });
-}
-
-export function useRecordClass() {
-  const queryClient = useQueryClient();
-
-  return useMutation({
-    mutationFn: () => {
-      return apiPost<WorkoutCounts>("/api/workout/record-class");
-    },
-    onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: [...workoutKey, "counts"],
-      });
-      queryClient.invalidateQueries({
-        queryKey: [...workoutKey, "contributions"],
+        queryKey: [...workoutKey, "streak"],
       });
     },
   });

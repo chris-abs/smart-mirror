@@ -6,8 +6,7 @@ import {
   recordWorkout,
   resetWorkoutStreak,
   getWorkoutCounts,
-  recordActualWorkout,
-  recordClass,
+  recordWorkoutType,
   getContributionsData,
   bulkImportWorkouts,
 } from "./workout.service.js";
@@ -64,26 +63,25 @@ router.get("/counts", async (_req, res) => {
   }
 });
 
-router.post("/record-actual", async (_req, res) => {
+router.post("/record-workout-type", async (req, res) => {
   try {
-    const data = await recordActualWorkout();
+    const { dates, type } = req.body;
+    if (!dates || !Array.isArray(dates) || dates.length === 0) {
+      return res.status(400).json({
+        error: "Dates array is required",
+      });
+    }
+    if (!type || !['weights', 'class', 'dailies'].includes(type)) {
+      return res.status(400).json({
+        error: "Type must be 'weights', 'class', or 'dailies'",
+      });
+    }
+    const data = await recordWorkoutType(dates, type);
     res.json(data);
   } catch (err) {
-    console.error("[Workout] record-actual error:", err);
+    console.error("[Workout] record-workout-type error:", err);
     res.status(500).json({
-      error: err.message || "Failed to record workout",
-    });
-  }
-});
-
-router.post("/record-class", async (_req, res) => {
-  try {
-    const data = await recordClass();
-    res.json(data);
-  } catch (err) {
-    console.error("[Workout] record-class error:", err);
-    res.status(500).json({
-      error: err.message || "Failed to record class",
+      error: err.message || "Failed to record workout type",
     });
   }
 });

@@ -3,8 +3,7 @@ import { CheckCircle2 } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
   useWorkoutCounts,
-  useRecordActualWorkout,
-  useRecordClass,
+  useRecordWorkoutType,
 } from "../../queries";
 import { useWorkoutCountResetChecker } from "../../utils/reset-checker";
 
@@ -12,20 +11,19 @@ export function WorkoutPanel() {
   useWorkoutCountResetChecker();
   
   const { data: countsData, isLoading } = useWorkoutCounts();
-  const recordWeightsMutation = useRecordActualWorkout();
-  const recordClassMutation = useRecordClass();
+  const recordWorkoutTypeMutation = useRecordWorkoutType();
 
   const daily = countsData?.daily ?? 0;
   const weekly = countsData?.weekly ?? 0;
   const monthly = countsData?.monthly ?? 0;
   const lastWorkoutDate = countsData?.lastWorkoutDate;
 
-  const handleRecordWeights = () => {
-    recordWeightsMutation.mutate();
-  };
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const todayStr = today.toISOString().split("T")[0];
 
-  const handleRecordClass = () => {
-    recordClassMutation.mutate();
+  const handleRecord = (type: 'weights' | 'class' | 'dailies') => {
+    recordWorkoutTypeMutation.mutate({ dates: [todayStr], type });
   };
 
   if (isLoading) {
@@ -52,15 +50,15 @@ export function WorkoutPanel() {
 
       <div className="flex flex-col gap-3 w-full">
         <button
-          onClick={handleRecordWeights}
-          disabled={recordWeightsMutation.isPending || recordClassMutation.isPending}
+          onClick={() => handleRecord('weights')}
+          disabled={recordWorkoutTypeMutation.isPending}
           className={`px-4 py-2 rounded-lg border transition-all ${
-            recordWeightsMutation.isPending || recordClassMutation.isPending
+            recordWorkoutTypeMutation.isPending
               ? "border-white/20 bg-white/5 opacity-50 cursor-not-allowed"
               : "border-white/30 bg-white/10 hover:bg-white/15 active:bg-white/20"
           } flex items-center justify-center gap-2`}
         >
-          {recordWeightsMutation.isPending ? (
+          {recordWorkoutTypeMutation.isPending ? (
             <>
               <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
               <span>Recording...</span>
@@ -73,15 +71,15 @@ export function WorkoutPanel() {
           )}
         </button>
         <button
-          onClick={handleRecordClass}
-          disabled={recordWeightsMutation.isPending || recordClassMutation.isPending}
+          onClick={() => handleRecord('class')}
+          disabled={recordWorkoutTypeMutation.isPending}
           className={`px-4 py-2 rounded-lg border transition-all ${
-            recordWeightsMutation.isPending || recordClassMutation.isPending
+            recordWorkoutTypeMutation.isPending
               ? "border-white/20 bg-white/5 opacity-50 cursor-not-allowed"
               : "border-white/30 bg-white/10 hover:bg-white/15 active:bg-white/20"
           } flex items-center justify-center gap-2`}
         >
-          {recordClassMutation.isPending ? (
+          {recordWorkoutTypeMutation.isPending ? (
             <>
               <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
               <span>Recording...</span>
@@ -90,6 +88,27 @@ export function WorkoutPanel() {
             <>
               <CheckCircle2 className="w-4 h-4" />
               <span>Record Class</span>
+            </>
+          )}
+        </button>
+        <button
+          onClick={() => handleRecord('dailies')}
+          disabled={recordWorkoutTypeMutation.isPending}
+          className={`px-4 py-2 rounded-lg border transition-all ${
+            recordWorkoutTypeMutation.isPending
+              ? "border-white/20 bg-white/5 opacity-50 cursor-not-allowed"
+              : "border-white/30 bg-white/10 hover:bg-white/15 active:bg-white/20"
+          } flex items-center justify-center gap-2`}
+        >
+          {recordWorkoutTypeMutation.isPending ? (
+            <>
+              <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+              <span>Recording...</span>
+            </>
+          ) : (
+            <>
+              <CheckCircle2 className="w-4 h-4" />
+              <span>Record Dailies</span>
             </>
           )}
         </button>

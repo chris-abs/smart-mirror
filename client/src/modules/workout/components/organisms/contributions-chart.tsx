@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
-import { useContributionsData, useBulkImportWorkouts } from "../../queries";
+import { useContributionsData, useRecordWorkoutType } from "../../queries";
 
 const DAYS_IN_WEEK = 7;
 const WEEKS_TO_SHOW = 53;
@@ -27,7 +27,7 @@ function getSquareBorder(hasDailyExercise: boolean) {
 
 export function ContributionsChart() {
   const { data, isLoading, error } = useContributionsData();
-  const bulkImportMutation = useBulkImportWorkouts();
+  const recordWorkoutTypeMutation = useRecordWorkoutType();
   const [selectedDates, setSelectedDates] = useState<Set<string>>(new Set());
   const [isSelectionMode, setIsSelectionMode] = useState(false);
 
@@ -69,7 +69,6 @@ export function ContributionsChart() {
   }
 
   const entries = data.entries;
-  const total = data.total;
 
   const firstDate = new Date(entries[0].date);
   const firstDayOfWeek = firstDate.getDay(); 
@@ -146,26 +145,28 @@ export function ContributionsChart() {
     });
   };
 
-  const handleSubmitSelected = () => {
-    if (selectedDates.size === 0) return;
+  const handleRecordWorkoutType = (type: 'weights' | 'class' | 'dailies') => {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const todayStr = today.toISOString().split("T")[0];
 
-    const entriesToUpdate = Array.from(selectedDates).map((dateStr) => {
-      const existingEntry = entriesMap.get(dateStr);
-      return {
-        date: dateStr,
-        has_workout: true,
-        has_daily_exercise: existingEntry?.has_daily_exercise || false,
-        has_weights: existingEntry?.has_weights || true, // Default to weights
-        has_class: existingEntry?.has_class || false,
-      };
-    });
+    // If dates are selected, record for those dates (bulk mode)
+    // Otherwise, record for today (daily check-in mode)
+    const datesToRecord = selectedDates.size > 0 
+      ? Array.from(selectedDates)
+      : [todayStr];
 
-    bulkImportMutation.mutate(entriesToUpdate, {
-      onSuccess: () => {
-        setSelectedDates(new Set());
-        setIsSelectionMode(false);
-      },
-    });
+    recordWorkoutTypeMutation.mutate(
+      { dates: datesToRecord, type },
+      {
+        onSuccess: () => {
+          if (selectedDates.size > 0) {
+            setSelectedDates(new Set());
+            setIsSelectionMode(false);
+          }
+        },
+      }
+    );
   };
 
   const handleCancelSelection = () => {
@@ -173,132 +174,190 @@ export function ContributionsChart() {
     setIsSelectionMode(false);
   };
 
+  const isPending = recordWorkoutTypeMutation.isPending;
+  const hasSelection = selectedDates.size > 0;
+
   return (
     <div className="rounded-xl border border-white/10 p-6 bg-white/5 flex flex-col gap-6">
       <div className="flex items-center justify-between">
-        <div className="text-xs uppercase tracking-[0.2em] opacity-60">
-          Workouts contributed over the last year
-        </div>
-        <div className="flex items-center gap-4">
-          {isSelectionMode ? (
-            <>
-              <span className="text-sm opacity-60">
-                {selectedDates.size} selected
-              </span>
-              <button
-                onClick={handleCancelSelection}
-                className="text-xs px-3 py-1 rounded border border-white/20 bg-white/5 hover:bg-white/10 transition-colors"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={handleSubmitSelected}
-                disabled={selectedDates.size === 0 || bulkImportMutation.isPending}
-                className="text-xs px-3 py-1 rounded border border-white/30 bg-white/10 hover:bg-white/15 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-              >
-                {bulkImportMutation.isPending ? "Updating..." : `Mark ${selectedDates.size} as workout${selectedDates.size !== 1 ? "s" : ""}`}
-              </button>
-            </>
-          ) : (
-            <>
-              <div className="text-sm font-semibold opacity-80">
-                {total} workouts
-              </div>
-              <button
-                onClick={() => setIsSelectionMode(true)}
-                className="text-xs px-3 py-1 rounded border border-white/20 bg-white/5 hover:bg-white/10 transition-colors"
-              >
-                Select dates
-              </button>
-            </>
+        <div className="flex flex-col gap-1">
+          <div className="text-xs uppercase tracking-[0.2em] opacity-60">
+            Workouts contributed over the last year
+          </div>
+          {hasSelection && (
+            <div className="text-xs opacity-60">
+              {selectedDates.size} date{selectedDates.size !== 1 ? "s" : ""} selected
+            </div>
           )}
+        </div>
+        <div className="flex items-center gap-3">
+          {isSelectionMode && (
+            <button
+              onClick={handleCancelSelection}
+              className="text-xs px-3 py-1.5 rounded border border-white/20 bg-white/5 hover:bg-white/10 transition-colors"
+            >
+              Cancel
+            </button>
+          )}
+          <button
+            onClick={() => setIsSelectionMode(!isSelectionMode)}
+            className="text-xs px-3 py-1.5 rounded border border-white/20 bg-white/5 hover:bg-white/10 transition-colors"
+          >
+            {isSelectionMode ? "Done" : "Select dates"}
+          </button>
         </div>
       </div>
 
-      <div className="flex flex-col gap-1">
-        <div className="flex gap-1 overflow-x-auto pb-1">
-          <div className="w-3 pr-2" /> 
-          {displayWeeks.map((_week, weekIndex) => {
-            const monthLabel = monthLabels.find((ml) => ml.weekIndex === weekIndex);
-            return (
-              <div
-                key={weekIndex}
-                className="w-3 flex items-start text-xs opacity-60"
-              >
-                {monthLabel ? monthLabel.month : ""}
-              </div>
-            );
-          })}
-        </div>
-
-        <div className="flex gap-1 overflow-x-auto pb-2">
-          <div className="flex flex-col gap-1 pr-2">
-            {dayLabels.map((label, dayIndex) => (
-              <div
-                key={dayIndex}
-                className="w-3 h-3 flex items-center justify-end text-xs opacity-60"
-              >
-                {label}
-              </div>
-            ))}
-          </div>
-
-          {displayWeeks.map((week, weekIndex) => (
-            <div key={weekIndex} className="flex flex-col gap-1">
-              {week.map((entry, dayIndex) => {
-                if (entry === null) {
-                  return (
-                    <div
-                      key={`${weekIndex}-${dayIndex}`}
-                      className="w-3 h-3 rounded bg-transparent border border-transparent"
-                    />
-                  );
-                }
-
-                const hasWorkout = entry.has_workout;
-                const hasDailyExercise = entry.has_daily_exercise;
-                const hasWeights = entry.has_weights || false;
-                const hasClass = entry.has_class || false;
-                const date = new Date(entry.date);
-                const dateStr = date.toLocaleDateString("en-US", {
-                  month: "short",
-                  day: "numeric",
-                  year: "numeric",
-                });
-
-                let tooltipText = dateStr;
-                const workoutTypes = [];
-                if (hasWeights) workoutTypes.push("Weights");
-                if (hasClass) workoutTypes.push("Class");
-                if (hasDailyExercise) workoutTypes.push("Dailies");
-                
-                if (workoutTypes.length > 0) {
-                  tooltipText += ` - ${workoutTypes.join(", ")}`;
-                } else {
-                  tooltipText += " - No activity";
-                }
-
-                const isSelected = selectedDates.has(entry.date);
-                const isClickable = isSelectionMode && !hasWorkout;
-
+      <div className="flex gap-6">
+        <div className="flex-1 flex flex-col gap-1">
+          <div className="flex flex-col gap-1">
+            <div className="flex gap-1 overflow-x-auto pb-1">
+              <div className="w-3 pr-2" /> 
+              {displayWeeks.map((_week, weekIndex) => {
+                const monthLabel = monthLabels.find((ml) => ml.weekIndex === weekIndex);
                 return (
                   <div
-                    key={entry.date}
-                    onClick={() => isClickable && handleSquareClick(entry)}
-                    className={`w-3 h-3 rounded ${getSquareColor(
-                      hasWeights,
-                      hasClass
-                    )} ${getSquareBorder(hasDailyExercise)} transition-colors ${
-                      isClickable ? "cursor-pointer hover:ring-2 hover:ring-white/50" : "cursor-default"
-                    } ${
-                      isSelected ? "ring-2 ring-blue-400 ring-offset-1 ring-offset-transparent" : ""
-                    }`}
-                    title={tooltipText}
-                  />
+                    key={weekIndex}
+                    className="w-3 flex items-start text-xs opacity-60"
+                  >
+                    {monthLabel ? monthLabel.month : ""}
+                  </div>
                 );
               })}
             </div>
-          ))}
+
+            <div className="flex gap-1 overflow-x-auto pb-2">
+              <div className="flex flex-col gap-1 pr-2">
+                {dayLabels.map((label, dayIndex) => (
+                  <div
+                    key={dayIndex}
+                    className="w-3 h-3 flex items-center justify-end text-xs opacity-60"
+                  >
+                    {label}
+                  </div>
+                ))}
+              </div>
+
+              {displayWeeks.map((week, weekIndex) => (
+                <div key={weekIndex} className="flex flex-col gap-1">
+                  {week.map((entry, dayIndex) => {
+                    if (entry === null) {
+                      return (
+                        <div
+                          key={`${weekIndex}-${dayIndex}`}
+                          className="w-3 h-3 rounded bg-transparent border border-transparent"
+                        />
+                      );
+                    }
+
+                    const hasDailyExercise = entry.has_daily_exercise;
+                    const hasWeights = entry.has_weights || false;
+                    const hasClass = entry.has_class || false;
+                    const date = new Date(entry.date);
+                    const dateStr = date.toLocaleDateString("en-US", {
+                      month: "short",
+                      day: "numeric",
+                      year: "numeric",
+                    });
+
+                    let tooltipText = dateStr;
+                    const workoutTypes = [];
+                    if (hasWeights) workoutTypes.push("Weights");
+                    if (hasClass) workoutTypes.push("Class");
+                    if (hasDailyExercise) workoutTypes.push("Dailies");
+                    
+                    if (workoutTypes.length > 0) {
+                      tooltipText += ` - ${workoutTypes.join(", ")}`;
+                    } else {
+                      tooltipText += " - No activity";
+                    }
+
+                    const isSelected = selectedDates.has(entry.date);
+                    const isClickable = isSelectionMode;
+
+                    return (
+                      <div
+                        key={`${weekIndex}-${dayIndex}-${entry.date}`}
+                        onClick={() => isClickable && handleSquareClick(entry)}
+                        className={`w-3 h-3 rounded ${getSquareColor(
+                          hasWeights,
+                          hasClass
+                        )} ${getSquareBorder(hasDailyExercise)} transition-colors ${
+                          isClickable ? "cursor-pointer hover:ring-2 hover:ring-white/50" : "cursor-default"
+                        } ${
+                          isSelected ? "ring-2 ring-blue-400 ring-offset-1 ring-offset-transparent" : ""
+                        }`}
+                        title={tooltipText}
+                      />
+                    );
+                  })}
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        <div className="flex flex-col gap-3 min-w-[140px]">
+          <button
+            onClick={() => handleRecordWorkoutType('weights')}
+            disabled={isPending}
+            className={`px-4 py-2.5 rounded-lg border transition-all ${
+              isPending
+                ? "border-white/20 bg-white/5 opacity-50 cursor-not-allowed"
+                : "border-white/30 bg-white/10 hover:bg-white/15 active:bg-white/20"
+            } flex items-center justify-center gap-2 text-sm`}
+          >
+            {isPending ? (
+              <>
+                <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                <span>Recording...</span>
+              </>
+            ) : (
+              <>
+                <span>Record Weights</span>
+              </>
+            )}
+          </button>
+          <button
+            onClick={() => handleRecordWorkoutType('class')}
+            disabled={isPending}
+            className={`px-4 py-2.5 rounded-lg border transition-all ${
+              isPending
+                ? "border-white/20 bg-white/5 opacity-50 cursor-not-allowed"
+                : "border-white/30 bg-white/10 hover:bg-white/15 active:bg-white/20"
+            } flex items-center justify-center gap-2 text-sm`}
+          >
+            {isPending ? (
+              <>
+                <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                <span>Recording...</span>
+              </>
+            ) : (
+              <>
+                <span>Record Class</span>
+              </>
+            )}
+          </button>
+          <button
+            onClick={() => handleRecordWorkoutType('dailies')}
+            disabled={isPending}
+            className={`px-4 py-2.5 rounded-lg border transition-all ${
+              isPending
+                ? "border-white/20 bg-white/5 opacity-50 cursor-not-allowed"
+                : "border-white/30 bg-white/10 hover:bg-white/15 active:bg-white/20"
+            } flex items-center justify-center gap-2 text-sm`}
+          >
+            {isPending ? (
+              <>
+                <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                <span>Recording...</span>
+              </>
+            ) : (
+              <>
+                <span>Record Dailies</span>
+              </>
+            )}
+          </button>
         </div>
       </div>
 

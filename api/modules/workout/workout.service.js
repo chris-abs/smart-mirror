@@ -147,50 +147,53 @@ export async function getWorkoutCounts() {
   };
 }
 
-export async function recordActualWorkout() {
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
-  const todayStr = today.toISOString().split("T")[0];
+export async function recordWorkoutType(dates, type) {
+  if (!Array.isArray(dates) || dates.length === 0) {
+    throw new Error("Dates array is required and must not be empty");
+  }
 
-  await query(
-    `INSERT INTO workout_entries (date, has_workout, has_daily_exercise, has_weights, has_class)
-     VALUES ($1, true, 
-       COALESCE((SELECT has_daily_exercise FROM workout_entries WHERE date = $1), false),
-       true,
-       COALESCE((SELECT has_class FROM workout_entries WHERE date = $1), false)
-     )
-     ON CONFLICT (date) 
-     DO UPDATE SET 
-       has_workout = true, 
-       has_weights = true,
-       updated_at = CURRENT_TIMESTAMP`,
-    [todayStr]
-  );
+  if (!['weights', 'class', 'dailies'].includes(type)) {
+    throw new Error("Type must be 'weights', 'class', or 'dailies'");
+  }
 
-  return getWorkoutCounts();
-}
+  // Process each date individually to handle different types cleanly
+  for (const dateStr of dates) {
+    if (type === 'dailies') {
+      await query(
+        `INSERT INTO workout_entries (date, has_daily_exercise)
+         VALUES ($1, true)
+         ON CONFLICT (date) 
+         DO UPDATE SET 
+           has_daily_exercise = true,
+           updated_at = CURRENT_TIMESTAMP`,
+        [dateStr]
+      );
+    } else if (type === 'weights') {
+      await query(
+        `INSERT INTO workout_entries (date, has_workout, has_weights)
+         VALUES ($1, true, true)
+         ON CONFLICT (date) 
+         DO UPDATE SET 
+           has_workout = true,
+           has_weights = true,
+           updated_at = CURRENT_TIMESTAMP`,
+        [dateStr]
+      );
+    } else if (type === 'class') {
+      await query(
+        `INSERT INTO workout_entries (date, has_workout, has_class)
+         VALUES ($1, true, true)
+         ON CONFLICT (date) 
+         DO UPDATE SET 
+           has_workout = true,
+           has_class = true,
+           updated_at = CURRENT_TIMESTAMP`,
+        [dateStr]
+      );
+    }
+  }
 
-export async function recordClass() {
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
-  const todayStr = today.toISOString().split("T")[0];
-
-  await query(
-    `INSERT INTO workout_entries (date, has_workout, has_daily_exercise, has_weights, has_class)
-     VALUES ($1, true, 
-       COALESCE((SELECT has_daily_exercise FROM workout_entries WHERE date = $1), false),
-       COALESCE((SELECT has_weights FROM workout_entries WHERE date = $1), false),
-       true
-     )
-     ON CONFLICT (date) 
-     DO UPDATE SET 
-       has_workout = true, 
-       has_class = true,
-       updated_at = CURRENT_TIMESTAMP`,
-    [todayStr]
-  );
-
-  return getWorkoutCounts();
+  return { recorded: dates.length };
 }
 
 export async function getContributionsData() {
