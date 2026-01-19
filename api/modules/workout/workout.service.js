@@ -180,8 +180,13 @@ export async function getContributionsData() {
 
   const entriesMap = new Map();
   result.rows.forEach((row) => {
-    entriesMap.set(row.date, {
-      date: row.date,
+    // Convert date to string format (YYYY-MM-DD) for consistent map key
+    const dateStr = typeof row.date === 'string' 
+      ? row.date 
+      : new Date(row.date).toISOString().split('T')[0];
+    
+    entriesMap.set(dateStr, {
+      date: dateStr,
       has_workout: row.has_workout,
       has_daily_exercise: row.has_daily_exercise,
     });

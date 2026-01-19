@@ -40,7 +40,7 @@ openssl rand -hex 32
 Start all services using Docker Compose:
 
 ```bash
-docker-compose up -d
+docker compose up -d
 ```
 
 This will:
@@ -55,7 +55,7 @@ The schema should be automatically created when PostgreSQL starts (via the init 
 
 ```bash
 # If running in Docker
-docker-compose exec api yarn setup-db
+docker compose exec api yarn setup-db
 
 # If running locally
 cd api
@@ -68,7 +68,7 @@ Import data from May 2025 to today:
 
 ```bash
 # If running in Docker
-docker-compose exec api yarn import-data
+docker compose exec api yarn import-data
 
 # If running locally
 cd api
@@ -77,7 +77,7 @@ yarn import-data
 
 To import a custom date range:
 ```bash
-docker-compose exec api node scripts/import-data.js 2025-05-01 2025-12-31
+docker compose exec api node scripts/import-data.js 2025-05-01 2025-12-31
 ```
 
 ### Step 5: Verify Setup
@@ -105,7 +105,7 @@ Check that everything is working:
 
 ```bash
 # Connect to PostgreSQL container
-docker-compose exec postgres psql -U workout_user -d workouts
+docker compose exec postgres psql -U workout_user -d workouts
 ```
 
 ### Common SQL Queries
@@ -156,7 +156,7 @@ To ensure Docker starts on boot:
 
 ```bash
 sudo systemctl enable docker
-sudo systemctl enable docker-compose
+sudo systemctl enable docker compose
 ```
 
 ## Troubleshooting
@@ -165,12 +165,12 @@ sudo systemctl enable docker-compose
 
 1. Check if PostgreSQL container is running:
    ```bash
-   docker-compose ps
+   docker compose ps
    ```
 
 2. Check PostgreSQL logs:
    ```bash
-   docker-compose logs postgres
+   docker compose logs postgres
    ```
 
 3. Verify DATABASE_URL in `.env` matches Docker service name (`postgres:5432`)
@@ -181,7 +181,7 @@ sudo systemctl enable docker-compose
 2. Ensure `VITE_API_TOKEN` matches `API_TOKEN` in client `.env`
 3. Check API logs:
    ```bash
-   docker-compose logs api
+   docker compose logs api
    ```
 
 ### Client Connection Issues
@@ -189,7 +189,7 @@ sudo systemctl enable docker-compose
 1. Verify `VITE_API_BASE` points to correct API URL
 2. Check client logs:
    ```bash
-   docker-compose logs client
+   docker compose logs client
    ```
 
 ## Development vs Production
@@ -204,7 +204,7 @@ For production deployment on Raspberry Pi:
 
 2. Update `client/Dockerfile` to serve production build instead of dev server
 
-3. Consider using `docker-compose.prod.yml` for production-specific configuration
+3. Consider using `docker compose.prod.yml` for production-specific configuration
 
 ## Next Steps
 

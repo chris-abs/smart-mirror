@@ -6,7 +6,7 @@ import { testConnection } from "./db/index.js";
 import spotifyRouter from "./modules/spotify/spotify.routes.js";
 import weatherRouter from "./modules/weather/weather.routes.js";
 import newsRouter from "./modules/news/news.routes.js";
-import hiveRouter from "./modules/hive/hive.routes.js";
+// import hiveRouter from "./modules/hive/hive.routes.js"; // Disabled - node-hivehome not working
 import workoutRouter from "./modules/workout/workout.routes.js";
 
 dotenv.config();
@@ -27,7 +27,7 @@ app.get("/api/health", async (req, res) => {
 app.use("/api/spotify", spotifyRouter);
 app.use("/api/weather", weatherRouter);
 app.use("/api/news", newsRouter);
-app.use("/api/hive", hiveRouter);
+// app.use("/api/hive", hiveRouter); // Disabled - node-hivehome not working
 app.use("/api/workout", workoutRouter);
 
 const PORT = process.env.PORT || 3001;
