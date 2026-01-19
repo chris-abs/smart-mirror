@@ -58,7 +58,7 @@ export function WorkoutCanvas() {
           </section>
         </div>
 
-        <div className="mt-auto w-full">
+        <div className="mt-auto w-full flex justify-center">
           <ContributionsChart />
         </div>
       </main>
