@@ -55,20 +55,12 @@ export function WorkoutCanvas() {
           </section>
 
           <section className="h-full">
-            {/* Right column - can add more components here */}
+            <WorkoutStreak />
           </section>
         </div>
 
         <div className="mt-auto w-full">
-          <div className="grid gap-6 items-end" style={{ gridTemplateColumns: 'minmax(0, 400px) 1fr minmax(0, 400px)' }}>
-            <div>
-              <WorkoutStreak />
-            </div>
-            <div />
-            <div>
-              <ContributionsChart />
-            </div>
-          </div>
+          <ContributionsChart />
         </div>
       </main>
     </>

@@ -13,7 +13,7 @@ function getSquareColor(hasWorkout: boolean, hasDailyExercise: boolean) {
 
 function getSquareBorder(hasDailyExercise: boolean) {
   if (hasDailyExercise) {
-    return "border-2 border-black";
+    return "border border-black";
   }
   return "border border-gray-500";
 }
@@ -61,8 +61,6 @@ export function ContributionsChart() {
   const entries = data.entries;
   const total = data.total;
 
-  // GitHub-style layout: weeks as columns, days as rows
-  // Start from the first Sunday before or on the first entry date
   const firstDate = new Date(entries[0].date);
   const firstDayOfWeek = firstDate.getDay(); // 0 = Sunday
   const startDate = new Date(firstDate);
@@ -74,7 +72,6 @@ export function ContributionsChart() {
     entriesMap.set(entry.date, entry);
   });
 
-  // Generate all days from start date to today
   const allDays: Array<typeof entries[0] | null> = [];
   const currentDate = new Date(startDate);
   const today = new Date();
@@ -102,10 +99,29 @@ export function ContributionsChart() {
     weeks.push(week);
   }
 
-  // Show last 53 weeks (approximately 1 year)
   const displayWeeks = weeks.slice(-WEEKS_TO_SHOW);
 
-  // Day labels for the left side (Sunday = 0, Monday = 1, etc.)
+  const monthLabels: Array<{ month: string; weekIndex: number }> = [];
+  const seenMonths = new Set<string>();
+  
+  displayWeeks.forEach((week, weekIndex) => {
+    for (const day of week) {
+      if (day) {
+        const date = new Date(day.date);
+        if (date.getDate() === 1) {
+          const monthKey = `${date.getFullYear()}-${date.getMonth()}`;
+          
+          if (!seenMonths.has(monthKey)) {
+            seenMonths.add(monthKey);
+            const monthName = date.toLocaleDateString("en-US", { month: "short" });
+            monthLabels.push({ month: monthName, weekIndex });
+            break; 
+          }
+        }
+      }
+    }
+  });
+
   const dayLabels = ["", "Mon", "", "Wed", "", "Fri", ""]; // Only show Mon, Wed, Fri like GitHub
 
   return (
@@ -119,74 +135,90 @@ export function ContributionsChart() {
         </div>
       </div>
 
-      <div className="flex gap-1 overflow-x-auto pb-2">
-        {/* Day labels on the left */}
-        <div className="flex flex-col gap-1 pr-2">
-          {dayLabels.map((label, dayIndex) => (
-            <div
-              key={dayIndex}
-              className="w-3 h-3 flex items-center justify-end text-xs opacity-60"
-            >
-              {label}
+      <div className="flex flex-col gap-1">
+        <div className="flex gap-1 overflow-x-auto pb-1">
+          <div className="w-3 pr-2" /> 
+          {displayWeeks.map((week, weekIndex) => {
+            const monthLabel = monthLabels.find((ml) => ml.weekIndex === weekIndex);
+            return (
+              <div
+                key={weekIndex}
+                className="w-3 flex items-start text-xs opacity-60"
+              >
+                {monthLabel ? monthLabel.month : ""}
+              </div>
+            );
+          })}
+        </div>
+
+        {/* Main chart grid */}
+        <div className="flex gap-1 overflow-x-auto pb-2">
+          <div className="flex flex-col gap-1 pr-2">
+            {dayLabels.map((label, dayIndex) => (
+              <div
+                key={dayIndex}
+                className="w-3 h-3 flex items-center justify-end text-xs opacity-60"
+              >
+                {label}
+              </div>
+            ))}
+          </div>
+
+          {displayWeeks.map((week, weekIndex) => (
+            <div key={weekIndex} className="flex flex-col gap-1">
+              {week.map((entry, dayIndex) => {
+                if (entry === null) {
+                  return (
+                    <div
+                      key={`${weekIndex}-${dayIndex}`}
+                      className="w-3 h-3 rounded bg-transparent border border-transparent"
+                    />
+                  );
+                }
+
+                const hasWorkout = entry.has_workout;
+                const hasDailyExercise = entry.has_daily_exercise;
+                const date = new Date(entry.date);
+                const dateStr = date.toLocaleDateString("en-US", {
+                  month: "short",
+                  day: "numeric",
+                  year: "numeric",
+                });
+
+                let tooltipText = dateStr;
+                if (hasWorkout && hasDailyExercise) {
+                  tooltipText += " - Workout & Daily Exercise";
+                } else if (hasWorkout) {
+                  tooltipText += " - Workout";
+                } else if (hasDailyExercise) {
+                  tooltipText += " - Daily Exercise";
+                } else {
+                  tooltipText += " - No activity";
+                }
+
+                return (
+                  <div
+                    key={entry.date}
+                    className={`w-3 h-3 rounded ${getSquareColor(
+                      hasWorkout,
+                      hasDailyExercise
+                    )} ${getSquareBorder(hasDailyExercise)} transition-colors cursor-pointer`}
+                    title={tooltipText}
+                  />
+                );
+              })}
             </div>
           ))}
         </div>
-
-        {/* Weeks as columns */}
-        {displayWeeks.map((week, weekIndex) => (
-          <div key={weekIndex} className="flex flex-col gap-1">
-            {week.map((entry, dayIndex) => {
-              if (entry === null) {
-                return (
-                  <div
-                    key={`${weekIndex}-${dayIndex}`}
-                    className="w-3 h-3 rounded-sm bg-transparent"
-                  />
-                );
-              }
-
-              const hasWorkout = entry.has_workout;
-              const hasDailyExercise = entry.has_daily_exercise;
-              const date = new Date(entry.date);
-              const dateStr = date.toLocaleDateString("en-US", {
-                month: "short",
-                day: "numeric",
-                year: "numeric",
-              });
-
-              let tooltipText = dateStr;
-              if (hasWorkout && hasDailyExercise) {
-                tooltipText += " - Workout & Daily Exercise";
-              } else if (hasWorkout) {
-                tooltipText += " - Workout";
-              } else if (hasDailyExercise) {
-                tooltipText += " - Daily Exercise";
-              } else {
-                tooltipText += " - No activity";
-              }
-
-              return (
-                <div
-                  key={entry.date}
-                  className={`w-3 h-3 rounded-sm ${getSquareColor(
-                    hasWorkout,
-                    hasDailyExercise
-                  )} ${getSquareBorder(hasDailyExercise)} transition-all hover:scale-125 cursor-pointer`}
-                  title={tooltipText}
-                />
-              );
-            })}
-          </div>
-        ))}
       </div>
 
       <div className="flex items-center gap-4 text-xs opacity-60">
         <span>Less</span>
         <div className="flex gap-1">
-          <div className="w-3 h-3 rounded-sm bg-gray-600 border border-gray-500" />
-          <div className="w-3 h-3 rounded-sm bg-gray-500 border border-gray-500" />
-          <div className="w-3 h-3 rounded-sm bg-blue-400 border border-gray-500" />
-          <div className="w-3 h-3 rounded-sm bg-blue-500 border border-gray-500" />
+          <div className="w-3 h-3 rounded bg-gray-600 border border-gray-500" />
+          <div className="w-3 h-3 rounded bg-gray-500 border border-gray-500" />
+          <div className="w-3 h-3 rounded bg-blue-400 border border-gray-500" />
+          <div className="w-3 h-3 rounded bg-blue-500 border border-gray-500" />
         </div>
         <span>More</span>
       </div>
