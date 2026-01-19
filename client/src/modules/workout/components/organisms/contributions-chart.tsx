@@ -66,6 +66,7 @@ export function ContributionsChart() {
   }
 
   const entries = data.entries;
+  const total = data.total;
 
   const firstDate = new Date(entries[0].date);
   const firstDayOfWeek = firstDate.getDay(); 
@@ -143,7 +144,7 @@ export function ContributionsChart() {
     <div className="rounded-xl border border-white/10 p-6 bg-white/5 flex flex-col gap-6">
       <div className="flex items-center justify-between">
         <div className="text-xs uppercase tracking-[0.2em] opacity-60">
-          Workouts contributed over the last year
+          {total} Workout{total !== 1 ? "s" : ""} contributed over the last year
         </div>
       </div>
 
