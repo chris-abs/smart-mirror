@@ -25,6 +25,10 @@ API_TOKEN=your-secret-api-token-here
 PORT=3001
 NODE_ENV=development
 
+# GitHub Configuration (for contributions chart)
+GITHUB_TOKEN=your-github-personal-access-token-here
+GITHUB_USERNAME=your-github-username
+
 # Client Configuration (for Vite)
 VITE_API_BASE=http://localhost:3001
 VITE_API_TOKEN=your-secret-api-token-here
@@ -34,6 +38,24 @@ VITE_API_TOKEN=your-secret-api-token-here
 ```bash
 openssl rand -hex 32
 ```
+
+### GitHub Personal Access Token Setup
+
+To enable the GitHub contributions chart, you need to create a Personal Access Token (PAT):
+
+1. Go to [GitHub Settings → Developer settings → Personal access tokens → Tokens (classic)](https://github.com/settings/tokens)
+2. Click **"Generate new token"** → **"Generate new token (classic)"**
+3. Configure the token:
+   - **Note**: e.g., "Smart Mirror API"
+   - **Expiration**: Choose your preferred duration
+   - **Scopes**: Check `read:user` (required for public contributions)
+     - If you need private repository contributions, also check `repo` scope
+4. Click **"Generate token"**
+5. **Copy the token immediately** (you won't be able to see it again)
+6. Add it to your `.env` file as `GITHUB_TOKEN`
+7. Add your GitHub username as `GITHUB_USERNAME`
+
+**Note**: The `read:user` scope is sufficient for viewing public repository contributions. For private repositories, you'll need the `repo` scope.
 
 ### Step 2: Start Docker Containers
 
