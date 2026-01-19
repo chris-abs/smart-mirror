@@ -81,6 +81,24 @@ export function useRecordActualWorkout() {
   });
 }
 
+export function useRecordClass() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: () => {
+      return apiPost<WorkoutCounts>("/api/workout/record-class");
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: [...workoutKey, "counts"],
+      });
+      queryClient.invalidateQueries({
+        queryKey: [...workoutKey, "contributions"],
+      });
+    },
+  });
+}
+
 export function useContributionsData() {
   return useQuery<ContributionsData>({
     queryKey: [...workoutKey, "contributions"],
@@ -94,7 +112,13 @@ export function useBulkImportWorkouts() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (entries: Array<{ date: string; has_workout: boolean; has_daily_exercise: boolean }>) => {
+    mutationFn: (entries: Array<{ 
+      date: string; 
+      has_workout: boolean; 
+      has_daily_exercise: boolean;
+      has_weights?: boolean;
+      has_class?: boolean;
+    }>) => {
       return apiPost<{ imported: number }>("/api/workout/bulk-import", { entries });
     },
     onSuccess: () => {

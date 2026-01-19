@@ -37,7 +37,7 @@ export function WorkoutStreak() {
     return (
       <div className="rounded-xl border border-white/10 p-6 bg-white/5 flex flex-col items-center gap-4 min-h-50">
         <div className="text-xs uppercase tracking-[0.2em] opacity-60">
-          Daily Exercise Streak
+          Dailies Streak
         </div>
         <Skeleton className="h-20 w-20 rounded-full" />
         <Skeleton className="h-8 w-24" />
@@ -53,7 +53,7 @@ export function WorkoutStreak() {
     <div className="rounded-xl border border-white/10 p-6 bg-white/5 flex flex-col gap-6 relative">
       <div className="flex justify-between items-start">
         <div className="text-xs uppercase tracking-[0.2em] opacity-60">
-        Daily Exercise Streak
+        Dailies Streak
         </div>
         {streak > 0 && (
           <IconButton
@@ -110,12 +110,12 @@ export function WorkoutStreak() {
           ) : isToday ? (
             <>
               <CheckCircle2 className="w-4 h-4" />
-              <span>Exercises completed today</span>
+              <span>Dailies completed today</span>
             </>
           ) : (
             <>
               <CheckCircle2 className="w-4 h-4" />
-              <span>Record Exercises</span>
+              <span>Record Dailies</span>
             </>
           )}
         </button>

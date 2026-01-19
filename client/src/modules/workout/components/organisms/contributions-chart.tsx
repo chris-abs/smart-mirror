@@ -5,11 +5,17 @@ import { useContributionsData, useBulkImportWorkouts } from "../../queries";
 const DAYS_IN_WEEK = 7;
 const WEEKS_TO_SHOW = 53;
 
-function getSquareColor(hasWorkout: boolean) {
-  if (hasWorkout) {
-    return "bg-blue-500";
+function getSquareColor(
+  hasWeights: boolean,
+  hasClass: boolean
+) {
+  if (hasWeights && hasClass) {
+    return "bg-blue-700"; // Dark blue for both workouts
   }
-  return "bg-gray-600";
+  if (hasWeights || hasClass) {
+    return "bg-blue-500"; // Medium blue for one workout
+  }
+  return "bg-gray-600"; // Gray for no workouts
 }
 
 function getSquareBorder(hasDailyExercise: boolean) {
@@ -149,6 +155,8 @@ export function ContributionsChart() {
         date: dateStr,
         has_workout: true,
         has_daily_exercise: existingEntry?.has_daily_exercise || false,
+        has_weights: existingEntry?.has_weights || true, // Default to weights
+        has_class: existingEntry?.has_class || false,
       };
     });
 
@@ -249,6 +257,8 @@ export function ContributionsChart() {
 
                 const hasWorkout = entry.has_workout;
                 const hasDailyExercise = entry.has_daily_exercise;
+                const hasWeights = entry.has_weights || false;
+                const hasClass = entry.has_class || false;
                 const date = new Date(entry.date);
                 const dateStr = date.toLocaleDateString("en-US", {
                   month: "short",
@@ -257,12 +267,13 @@ export function ContributionsChart() {
                 });
 
                 let tooltipText = dateStr;
-                if (hasWorkout && hasDailyExercise) {
-                  tooltipText += " - Workout & Daily Exercise";
-                } else if (hasWorkout) {
-                  tooltipText += " - Workout";
-                } else if (hasDailyExercise) {
-                  tooltipText += " - Daily Exercise";
+                const workoutTypes = [];
+                if (hasWeights) workoutTypes.push("Weights");
+                if (hasClass) workoutTypes.push("Class");
+                if (hasDailyExercise) workoutTypes.push("Dailies");
+                
+                if (workoutTypes.length > 0) {
+                  tooltipText += ` - ${workoutTypes.join(", ")}`;
                 } else {
                   tooltipText += " - No activity";
                 }
@@ -275,7 +286,8 @@ export function ContributionsChart() {
                     key={entry.date}
                     onClick={() => isClickable && handleSquareClick(entry)}
                     className={`w-3 h-3 rounded ${getSquareColor(
-                      hasWorkout
+                      hasWeights,
+                      hasClass
                     )} ${getSquareBorder(hasDailyExercise)} transition-colors ${
                       isClickable ? "cursor-pointer hover:ring-2 hover:ring-white/50" : "cursor-default"
                     } ${
@@ -294,11 +306,11 @@ export function ContributionsChart() {
         <span>Less</span>
         <div className="flex gap-1">
           <div className="w-3 h-3 rounded bg-gray-600 border border-gray-500" />
-          <div className="w-3 h-3 rounded bg-gray-500 border border-gray-500" />
-          <div className="w-3 h-3 rounded bg-blue-400 border border-gray-500" />
           <div className="w-3 h-3 rounded bg-blue-500 border border-gray-500" />
+          <div className="w-3 h-3 rounded bg-blue-700 border border-gray-500" />
         </div>
         <span>More</span>
+        <span className="ml-4 text-xs opacity-40">(One workout / Both workouts)</span>
       </div>
     </div>
   );

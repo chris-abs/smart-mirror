@@ -7,6 +7,7 @@ import {
   resetWorkoutStreak,
   getWorkoutCounts,
   recordActualWorkout,
+  recordClass,
   getContributionsData,
   bulkImportWorkouts,
 } from "./workout.service.js";
@@ -71,6 +72,18 @@ router.post("/record-actual", async (_req, res) => {
     console.error("[Workout] record-actual error:", err);
     res.status(500).json({
       error: err.message || "Failed to record workout",
+    });
+  }
+});
+
+router.post("/record-class", async (_req, res) => {
+  try {
+    const data = await recordClass();
+    res.json(data);
+  } catch (err) {
+    console.error("[Workout] record-class error:", err);
+    res.status(500).json({
+      error: err.message || "Failed to record class",
     });
   }
 });

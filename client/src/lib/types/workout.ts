@@ -14,6 +14,8 @@ export interface WorkoutEntry {
   date: string;
   has_workout: boolean;
   has_daily_exercise: boolean;
+  has_weights?: boolean;
+  has_class?: boolean;
 }
 
 export interface ContributionsData {
