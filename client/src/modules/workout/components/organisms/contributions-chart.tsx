@@ -9,22 +9,21 @@ function getSquareColor(
   hasClass: boolean
 ) {
   if (hasWeights && hasClass) {
-    return "bg-blue-700"; // Dark blue for both workouts
+    return "bg-blue-700"; 
   }
   if (hasWeights || hasClass) {
-    return "bg-blue-500"; // Medium blue for one workout
+    return "bg-blue-500"; 
   }
-  return "bg-gray-600"; // Gray for no workouts
+  return "bg-gray-600"; 
 }
 
 function getSquareBorder() {
-  // Standard border for all squares
   return "border border-gray-500";
 }
 
 function getSquareInsetRing(hasDailyExercise: boolean) {
   if (hasDailyExercise) {
-    return "shadow-[inset_0_0_0_1px_rgba(255,255,255,0.3)]"; // Bright inset ring for dailies
+    return "shadow-[inset_0_0_0_1px_rgba(255,255,255,0.3)]"; 
   }
   return "";
 }
