@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 
-import { ContributionsChart } from "../../../modules/workout/components/organisms/contributions-chart";
+import { WorkoutContributionsChart } from "../../../modules/workout/components/organisms/contributions-chart";
 import { SpotifyNowPlayingCard } from "../../../modules/spotify/components/organisms/spotify-now-playing";
 
 export function WorkoutCanvas() {
@@ -59,7 +59,7 @@ export function WorkoutCanvas() {
         </div>
 
         <div className="mt-auto w-full flex justify-center">
-          <ContributionsChart />
+          <WorkoutContributionsChart />
         </div>
       </main>
     </>
