@@ -4,7 +4,7 @@ import { useContributionsData } from "../../queries";
 const DAYS_IN_WEEK = 7;
 const WEEKS_TO_SHOW = 53;
 
-function getSquareColor(hasWorkout: boolean, hasDailyExercise: boolean) {
+function getSquareColor(hasWorkout: boolean) {
   if (hasWorkout) {
     return "bg-blue-500";
   }
@@ -62,11 +62,10 @@ export function ContributionsChart() {
   const total = data.total;
 
   const firstDate = new Date(entries[0].date);
-  const firstDayOfWeek = firstDate.getDay(); // 0 = Sunday
+  const firstDayOfWeek = firstDate.getDay(); 
   const startDate = new Date(firstDate);
   startDate.setDate(startDate.getDate() - firstDayOfWeek);
 
-  // Create a map for quick lookup
   const entriesMap = new Map();
   entries.forEach((entry) => {
     entriesMap.set(entry.date, entry);
@@ -88,11 +87,9 @@ export function ContributionsChart() {
     currentDate.setDate(currentDate.getDate() + 1);
   }
 
-  // Group into weeks (each week is a column)
   const weeks: Array<Array<typeof entries[0] | null>> = [];
   for (let i = 0; i < allDays.length; i += DAYS_IN_WEEK) {
     const week = allDays.slice(i, i + DAYS_IN_WEEK);
-    // Pad the last week if needed
     while (week.length < DAYS_IN_WEEK) {
       week.push(null);
     }
@@ -122,7 +119,7 @@ export function ContributionsChart() {
     }
   });
 
-  const dayLabels = ["", "Mon", "", "Wed", "", "Fri", ""]; // Only show Mon, Wed, Fri like GitHub
+  const dayLabels = ["", "Mon", "", "Wed", "", "Fri", ""]; 
 
   return (
     <div className="rounded-xl border border-white/10 p-6 bg-white/5 flex flex-col gap-6">
@@ -138,7 +135,7 @@ export function ContributionsChart() {
       <div className="flex flex-col gap-1">
         <div className="flex gap-1 overflow-x-auto pb-1">
           <div className="w-3 pr-2" /> 
-          {displayWeeks.map((week, weekIndex) => {
+          {displayWeeks.map((_week, weekIndex) => {
             const monthLabel = monthLabels.find((ml) => ml.weekIndex === weekIndex);
             return (
               <div
@@ -151,7 +148,6 @@ export function ContributionsChart() {
           })}
         </div>
 
-        {/* Main chart grid */}
         <div className="flex gap-1 overflow-x-auto pb-2">
           <div className="flex flex-col gap-1 pr-2">
             {dayLabels.map((label, dayIndex) => (
@@ -200,8 +196,7 @@ export function ContributionsChart() {
                   <div
                     key={entry.date}
                     className={`w-3 h-3 rounded ${getSquareColor(
-                      hasWorkout,
-                      hasDailyExercise
+                      hasWorkout
                     )} ${getSquareBorder(hasDailyExercise)} transition-colors cursor-pointer`}
                     title={tooltipText}
                   />

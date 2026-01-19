@@ -29,6 +29,9 @@ export function useRecordWorkout() {
       queryClient.invalidateQueries({
         queryKey: [...workoutKey, "streak"],
       });
+      queryClient.invalidateQueries({
+        queryKey: [...workoutKey, "contributions"],
+      });
     },
   });
 }
@@ -43,6 +46,9 @@ export function useResetWorkoutStreak() {
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: [...workoutKey, "streak"],
+      });
+      queryClient.invalidateQueries({
+        queryKey: [...workoutKey, "contributions"],
       });
     },
   });
