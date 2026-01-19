@@ -17,11 +17,16 @@ function getSquareColor(
   return "bg-gray-600"; // Gray for no workouts
 }
 
-function getSquareBorder(hasDailyExercise: boolean) {
-  if (hasDailyExercise) {
-    return "border border-black";
-  }
+function getSquareBorder() {
+  // Standard border for all squares
   return "border border-gray-500";
+}
+
+function getSquareInsetRing(hasDailyExercise: boolean) {
+  if (hasDailyExercise) {
+    return "shadow-[inset_0_0_0_1px_rgba(255,255,255,0.3)]"; // Bright inset ring for dailies
+  }
+  return "";
 }
 
 export function ContributionsChart() {
@@ -152,7 +157,7 @@ export function ContributionsChart() {
         <div className="flex-1 flex flex-col gap-1">
           <div className="flex flex-col gap-1">
             <div className="flex gap-1 overflow-x-auto pb-1">
-              <div className="w-3 pr-2" /> 
+              <div className="w-10 pr-2" /> 
               {displayWeeks.map((_week, weekIndex) => {
                 const monthLabel = monthLabels.find((ml) => ml.weekIndex === weekIndex);
                 return (
@@ -167,11 +172,11 @@ export function ContributionsChart() {
             </div>
 
             <div className="flex gap-1 overflow-x-auto pb-2">
-              <div className="flex flex-col gap-1 pr-2">
+              <div className="flex flex-col gap-1 pr-2 min-w-[40px]">
                 {dayLabels.map((label, dayIndex) => (
                   <div
                     key={dayIndex}
-                    className="w-3 h-3 flex items-center justify-end text-xs opacity-60"
+                    className="w-10 h-3 flex items-center justify-end text-xs opacity-60"
                   >
                     {label}
                   </div>
@@ -218,7 +223,7 @@ export function ContributionsChart() {
                         className={`w-3 h-3 rounded ${getSquareColor(
                           hasWeights,
                           hasClass
-                        )} ${getSquareBorder(hasDailyExercise)} transition-colors`}
+                        )} ${getSquareBorder()} ${getSquareInsetRing(hasDailyExercise)} transition-colors`}
                         title={tooltipText}
                       />
                     );
