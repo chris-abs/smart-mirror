@@ -1,11 +1,10 @@
-import { CheckCircle2 } from "lucide-react";
-
 import { Skeleton } from "@/components/ui/skeleton";
 import {
   useWorkoutCounts,
   useRecordWorkoutType,
 } from "../../queries";
 import { useWorkoutCountResetChecker } from "../../utils/reset-checker";
+import { RecordWorkoutButton } from "../molecules/record-workout-button";
 
 export function WorkoutPanel() {
   useWorkoutCountResetChecker();
@@ -48,70 +47,25 @@ export function WorkoutPanel() {
         Workouts Tracked
       </div>
 
-      <div className="flex flex-col gap-3 w-full">
-        <button
+      <div className="flex flex-col gap-2 w-full">
+        <RecordWorkoutButton
+          type="weights"
           onClick={() => handleRecord('weights')}
           disabled={recordWorkoutTypeMutation.isPending}
-          className={`px-4 py-2 rounded-lg border transition-all ${
-            recordWorkoutTypeMutation.isPending
-              ? "border-white/20 bg-white/5 opacity-50 cursor-not-allowed"
-              : "border-white/30 bg-white/10 hover:bg-white/15 active:bg-white/20"
-          } flex items-center justify-center gap-2`}
-        >
-          {recordWorkoutTypeMutation.isPending ? (
-            <>
-              <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-              <span>Recording...</span>
-            </>
-          ) : (
-            <>
-              <CheckCircle2 className="w-4 h-4" />
-              <span>Record Weights</span>
-            </>
-          )}
-        </button>
-        <button
+          isPending={recordWorkoutTypeMutation.isPending}
+        />
+        <RecordWorkoutButton
+          type="class"
           onClick={() => handleRecord('class')}
           disabled={recordWorkoutTypeMutation.isPending}
-          className={`px-4 py-2 rounded-lg border transition-all ${
-            recordWorkoutTypeMutation.isPending
-              ? "border-white/20 bg-white/5 opacity-50 cursor-not-allowed"
-              : "border-white/30 bg-white/10 hover:bg-white/15 active:bg-white/20"
-          } flex items-center justify-center gap-2`}
-        >
-          {recordWorkoutTypeMutation.isPending ? (
-            <>
-              <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-              <span>Recording...</span>
-            </>
-          ) : (
-            <>
-              <CheckCircle2 className="w-4 h-4" />
-              <span>Record Class</span>
-            </>
-          )}
-        </button>
-        <button
+          isPending={recordWorkoutTypeMutation.isPending}
+        />
+        <RecordWorkoutButton
+          type="dailies"
           onClick={() => handleRecord('dailies')}
           disabled={recordWorkoutTypeMutation.isPending}
-          className={`px-4 py-2 rounded-lg border transition-all ${
-            recordWorkoutTypeMutation.isPending
-              ? "border-white/20 bg-white/5 opacity-50 cursor-not-allowed"
-              : "border-white/30 bg-white/10 hover:bg-white/15 active:bg-white/20"
-          } flex items-center justify-center gap-2`}
-        >
-          {recordWorkoutTypeMutation.isPending ? (
-            <>
-              <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-              <span>Recording...</span>
-            </>
-          ) : (
-            <>
-              <CheckCircle2 className="w-4 h-4" />
-              <span>Record Dailies</span>
-            </>
-          )}
-        </button>
+          isPending={recordWorkoutTypeMutation.isPending}
+        />
       </div>
 
       <div className="flex flex-col gap-2">

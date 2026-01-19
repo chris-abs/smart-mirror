@@ -7,6 +7,7 @@ import {
 } from "@/lib/types/contributions";
 import { useContributionsData, useRecordWorkoutType } from "../../queries";
 import type { WorkoutEntry } from "../../../../lib/types/workout";
+import { RecordWorkoutButton } from "../molecules/record-workout-button";
 
 function transformWorkoutEntryToContribution(entry: WorkoutEntry): ContributionEntry {
   const hasWeights = entry.has_weights || false;
@@ -82,66 +83,24 @@ export function WorkoutContributionsChart() {
 
   const actionButtons = (
     <>
-      <button
+      <RecordWorkoutButton
+        type="weights"
         onClick={() => handleRecordWorkoutType("weights")}
         disabled={isPending}
-        className={`px-4 py-2.5 rounded-lg border transition-all ${
-          isPending
-            ? "border-white/20 bg-white/5 opacity-50 cursor-not-allowed"
-            : "border-white/30 bg-white/10 hover:bg-white/15 active:bg-white/20"
-        } flex items-center justify-center gap-2 text-sm`}
-      >
-        {isPending ? (
-          <>
-            <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-            <span>Recording...</span>
-          </>
-        ) : (
-          <>
-            <span>Record Weights</span>
-          </>
-        )}
-      </button>
-      <button
+        isPending={isPending}
+      />
+      <RecordWorkoutButton
+        type="class"
         onClick={() => handleRecordWorkoutType("class")}
         disabled={isPending}
-        className={`px-4 py-2.5 rounded-lg border transition-all ${
-          isPending
-            ? "border-white/20 bg-white/5 opacity-50 cursor-not-allowed"
-            : "border-white/30 bg-white/10 hover:bg-white/15 active:bg-white/20"
-        } flex items-center justify-center gap-2 text-sm`}
-      >
-        {isPending ? (
-          <>
-            <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-            <span>Recording...</span>
-          </>
-        ) : (
-          <>
-            <span>Record Class</span>
-          </>
-        )}
-      </button>
-      <button
+        isPending={isPending}
+      />
+      <RecordWorkoutButton
+        type="dailies"
         onClick={() => handleRecordWorkoutType("dailies")}
         disabled={isPending}
-        className={`px-4 py-2.5 rounded-lg border transition-all ${
-          isPending
-            ? "border-white/20 bg-white/5 opacity-50 cursor-not-allowed"
-            : "border-white/30 bg-white/10 hover:bg-white/15 active:bg-white/20"
-        } flex items-center justify-center gap-2 text-sm`}
-      >
-        {isPending ? (
-          <>
-            <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-            <span>Recording...</span>
-          </>
-        ) : (
-          <>
-            <span>Record Dailies</span>
-          </>
-        )}
-      </button>
+        isPending={isPending}
+      />
     </>
   );
 
