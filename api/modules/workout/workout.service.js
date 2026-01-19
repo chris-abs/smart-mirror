@@ -254,39 +254,3 @@ export async function getContributionsData() {
     total: totalWorkouts,
   };
 }
-
-export async function bulkImportWorkouts(entries) {
-  if (!Array.isArray(entries) || entries.length === 0) {
-    throw new Error("Entries must be a non-empty array");
-  }
-
-  const values = entries
-    .map((entry, index) => {
-      const base = index * 5;
-      return `($${base + 1}, $${base + 2}, $${base + 3}, $${base + 4}, $${base + 5})`;
-    })
-    .join(", ");
-
-  const params = entries.flatMap((entry) => [
-    entry.date,
-    entry.has_workout || false,
-    entry.has_daily_exercise || false,
-    entry.has_weights || false,
-    entry.has_class || false,
-  ]);
-
-  await query(
-    `INSERT INTO workout_entries (date, has_workout, has_daily_exercise, has_weights, has_class)
-     VALUES ${values}
-     ON CONFLICT (date) 
-     DO UPDATE SET 
-       has_workout = EXCLUDED.has_workout,
-       has_daily_exercise = EXCLUDED.has_daily_exercise,
-       has_weights = workout_entries.has_weights OR EXCLUDED.has_weights,
-       has_class = workout_entries.has_class OR EXCLUDED.has_class,
-       updated_at = CURRENT_TIMESTAMP`,
-    params
-  );
-
-  return { imported: entries.length };
-}

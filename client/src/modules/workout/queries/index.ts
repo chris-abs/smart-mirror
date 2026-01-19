@@ -93,27 +93,3 @@ export function useContributionsData() {
   });
 }
 
-export function useBulkImportWorkouts() {
-  const queryClient = useQueryClient();
-
-  return useMutation({
-    mutationFn: (entries: Array<{ 
-      date: string; 
-      has_workout: boolean; 
-      has_daily_exercise: boolean;
-      has_weights?: boolean;
-      has_class?: boolean;
-    }>) => {
-      return apiPost<{ imported: number }>("/api/workout/bulk-import", { entries });
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: [...workoutKey, "contributions"],
-      });
-      queryClient.invalidateQueries({
-        queryKey: [...workoutKey, "counts"],
-      });
-    },
-  });
-}
-

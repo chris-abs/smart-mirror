@@ -8,7 +8,6 @@ import {
   getWorkoutCounts,
   recordWorkoutType,
   getContributionsData,
-  bulkImportWorkouts,
 } from "./workout.service.js";
 
 const router = Router();
@@ -94,24 +93,6 @@ router.get("/contributions", async (_req, res) => {
     console.error("[Workout] contributions error:", err);
     res.status(500).json({
       error: err.message || "Failed to get contributions data",
-    });
-  }
-});
-
-router.post("/bulk-import", async (req, res) => {
-  try {
-    const { entries } = req.body;
-    if (!entries || !Array.isArray(entries)) {
-      return res.status(400).json({
-        error: "Entries array is required",
-      });
-    }
-    const data = await bulkImportWorkouts(entries);
-    res.json(data);
-  } catch (err) {
-    console.error("[Workout] bulk-import error:", err);
-    res.status(500).json({
-      error: err.message || "Failed to import workouts",
     });
   }
 });

@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useContributionsData, useRecordWorkoutType } from "../../queries";
 
@@ -28,8 +27,6 @@ function getSquareBorder(hasDailyExercise: boolean) {
 export function ContributionsChart() {
   const { data, isLoading, error } = useContributionsData();
   const recordWorkoutTypeMutation = useRecordWorkoutType();
-  const [selectedDates, setSelectedDates] = useState<Set<string>>(new Set());
-  const [isSelectionMode, setIsSelectionMode] = useState(false);
 
   if (isLoading) {
     return (
@@ -130,81 +127,23 @@ export function ContributionsChart() {
 
   const dayLabels = ["", "Mon", "", "Wed", "", "Fri", ""]; 
 
-  const handleSquareClick = (entry: typeof entries[0]) => {
-    if (!isSelectionMode) return;
-    
-    const dateStr = entry.date;
-    setSelectedDates((prev) => {
-      const next = new Set(prev);
-      if (next.has(dateStr)) {
-        next.delete(dateStr);
-      } else {
-        next.add(dateStr);
-      }
-      return next;
-    });
-  };
-
   const handleRecordWorkoutType = (type: 'weights' | 'class' | 'dailies') => {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
     const todayStr = today.toISOString().split("T")[0];
 
-    // If dates are selected, record for those dates (bulk mode)
-    // Otherwise, record for today (daily check-in mode)
-    const datesToRecord = selectedDates.size > 0 
-      ? Array.from(selectedDates)
-      : [todayStr];
-
     recordWorkoutTypeMutation.mutate(
-      { dates: datesToRecord, type },
-      {
-        onSuccess: () => {
-          if (selectedDates.size > 0) {
-            setSelectedDates(new Set());
-            setIsSelectionMode(false);
-          }
-        },
-      }
+      { dates: [todayStr], type }
     );
   };
 
-  const handleCancelSelection = () => {
-    setSelectedDates(new Set());
-    setIsSelectionMode(false);
-  };
-
   const isPending = recordWorkoutTypeMutation.isPending;
-  const hasSelection = selectedDates.size > 0;
 
   return (
     <div className="rounded-xl border border-white/10 p-6 bg-white/5 flex flex-col gap-6">
       <div className="flex items-center justify-between">
-        <div className="flex flex-col gap-1">
-          <div className="text-xs uppercase tracking-[0.2em] opacity-60">
-            Workouts contributed over the last year
-          </div>
-          {hasSelection && (
-            <div className="text-xs opacity-60">
-              {selectedDates.size} date{selectedDates.size !== 1 ? "s" : ""} selected
-            </div>
-          )}
-        </div>
-        <div className="flex items-center gap-3">
-          {isSelectionMode && (
-            <button
-              onClick={handleCancelSelection}
-              className="text-xs px-3 py-1.5 rounded border border-white/20 bg-white/5 hover:bg-white/10 transition-colors"
-            >
-              Cancel
-            </button>
-          )}
-          <button
-            onClick={() => setIsSelectionMode(!isSelectionMode)}
-            className="text-xs px-3 py-1.5 rounded border border-white/20 bg-white/5 hover:bg-white/10 transition-colors"
-          >
-            {isSelectionMode ? "Done" : "Select dates"}
-          </button>
+        <div className="text-xs uppercase tracking-[0.2em] opacity-60">
+          Workouts contributed over the last year
         </div>
       </div>
 
@@ -272,21 +211,13 @@ export function ContributionsChart() {
                       tooltipText += " - No activity";
                     }
 
-                    const isSelected = selectedDates.has(entry.date);
-                    const isClickable = isSelectionMode;
-
                     return (
                       <div
                         key={`${weekIndex}-${dayIndex}-${entry.date}`}
-                        onClick={() => isClickable && handleSquareClick(entry)}
                         className={`w-3 h-3 rounded ${getSquareColor(
                           hasWeights,
                           hasClass
-                        )} ${getSquareBorder(hasDailyExercise)} transition-colors ${
-                          isClickable ? "cursor-pointer hover:ring-2 hover:ring-white/50" : "cursor-default"
-                        } ${
-                          isSelected ? "ring-2 ring-blue-400 ring-offset-1 ring-offset-transparent" : ""
-                        }`}
+                        )} ${getSquareBorder(hasDailyExercise)} transition-colors`}
                         title={tooltipText}
                       />
                     );
