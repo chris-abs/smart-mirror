@@ -25,9 +25,9 @@ export interface ColorScheme {
 export const COLOR_SCHEMES = {
   blue: {
     level0: "bg-gray-600",
-    level1: "bg-blue-500",
-    level2: "bg-blue-600",
-    level3: "bg-blue-700",
+    level1: "bg-blue-400",
+    level2: "bg-blue-500",
+    level3: "bg-blue-600",
     level4: "bg-blue-800",
     border: "border-gray-500",
   } as ColorScheme,

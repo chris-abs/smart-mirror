@@ -226,6 +226,7 @@ export function ContributionsChart({
             <div className={`w-3 h-3 rounded ${colorScheme.level1} border ${colorScheme.border}`} />
             <div className={`w-3 h-3 rounded ${colorScheme.level2} border ${colorScheme.border}`} />
             <div className={`w-3 h-3 rounded ${colorScheme.level3} border ${colorScheme.border}`} />
+            <div className={`w-3 h-3 rounded ${colorScheme.level4} border ${colorScheme.border}`} />
           </div>
           <span>More</span>
           {legendLabel && (

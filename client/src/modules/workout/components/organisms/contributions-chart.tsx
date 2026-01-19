@@ -13,11 +13,14 @@ function transformWorkoutEntryToContribution(entry: WorkoutEntry): ContributionE
   const hasClass = entry.has_class || false;
   const hasDailyExercise = entry.has_daily_exercise;
 
+  const workoutCount = [hasWeights, hasClass, hasDailyExercise].filter(Boolean).length;
   let level: ContributionLevel = 0;
-  if (hasWeights && hasClass) {
-    level = 2;
-  } else if (hasWeights || hasClass) {
+  if (workoutCount === 1) {
     level = 1;
+  } else if (workoutCount === 2) {
+    level = 3;
+  } else if (workoutCount === 3) {
+    level = 4;
   }
 
   const date = new Date(entry.date);
@@ -150,7 +153,7 @@ export function WorkoutContributionsChart() {
       title={title}
       colorScheme={COLOR_SCHEMES.blue}
       emptyMessage="No workout data available"
-      legendLabel="(One workout / Both workouts)"
+      legendLabel="(1/3 / 2/3 / 3/3 workouts)"
       actionButtons={actionButtons}
       showLegend={true}
     />
