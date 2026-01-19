@@ -1,5 +1,6 @@
+import { useState } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
-import { useContributionsData } from "../../queries";
+import { useContributionsData, useBulkImportWorkouts } from "../../queries";
 
 const DAYS_IN_WEEK = 7;
 const WEEKS_TO_SHOW = 53;
@@ -20,6 +21,9 @@ function getSquareBorder(hasDailyExercise: boolean) {
 
 export function ContributionsChart() {
   const { data, isLoading, error } = useContributionsData();
+  const bulkImportMutation = useBulkImportWorkouts();
+  const [selectedDates, setSelectedDates] = useState<Set<string>>(new Set());
+  const [isSelectionMode, setIsSelectionMode] = useState(false);
 
   if (isLoading) {
     return (
@@ -121,14 +125,85 @@ export function ContributionsChart() {
 
   const dayLabels = ["", "Mon", "", "Wed", "", "Fri", ""]; 
 
+  const handleSquareClick = (entry: typeof entries[0]) => {
+    if (!isSelectionMode) return;
+    
+    const dateStr = entry.date;
+    setSelectedDates((prev) => {
+      const next = new Set(prev);
+      if (next.has(dateStr)) {
+        next.delete(dateStr);
+      } else {
+        next.add(dateStr);
+      }
+      return next;
+    });
+  };
+
+  const handleSubmitSelected = () => {
+    if (selectedDates.size === 0) return;
+
+    const entriesToUpdate = Array.from(selectedDates).map((dateStr) => {
+      const existingEntry = entriesMap.get(dateStr);
+      return {
+        date: dateStr,
+        has_workout: true,
+        has_daily_exercise: existingEntry?.has_daily_exercise || false,
+      };
+    });
+
+    bulkImportMutation.mutate(entriesToUpdate, {
+      onSuccess: () => {
+        setSelectedDates(new Set());
+        setIsSelectionMode(false);
+      },
+    });
+  };
+
+  const handleCancelSelection = () => {
+    setSelectedDates(new Set());
+    setIsSelectionMode(false);
+  };
+
   return (
     <div className="rounded-xl border border-white/10 p-6 bg-white/5 flex flex-col gap-6">
       <div className="flex items-center justify-between">
         <div className="text-xs uppercase tracking-[0.2em] opacity-60">
           Workouts contributed over the last year
         </div>
-        <div className="text-sm font-semibold opacity-80">
-          {total} workouts
+        <div className="flex items-center gap-4">
+          {isSelectionMode ? (
+            <>
+              <span className="text-sm opacity-60">
+                {selectedDates.size} selected
+              </span>
+              <button
+                onClick={handleCancelSelection}
+                className="text-xs px-3 py-1 rounded border border-white/20 bg-white/5 hover:bg-white/10 transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleSubmitSelected}
+                disabled={selectedDates.size === 0 || bulkImportMutation.isPending}
+                className="text-xs px-3 py-1 rounded border border-white/30 bg-white/10 hover:bg-white/15 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              >
+                {bulkImportMutation.isPending ? "Updating..." : `Mark ${selectedDates.size} as workout${selectedDates.size !== 1 ? "s" : ""}`}
+              </button>
+            </>
+          ) : (
+            <>
+              <div className="text-sm font-semibold opacity-80">
+                {total} workouts
+              </div>
+              <button
+                onClick={() => setIsSelectionMode(true)}
+                className="text-xs px-3 py-1 rounded border border-white/20 bg-white/5 hover:bg-white/10 transition-colors"
+              >
+                Select dates
+              </button>
+            </>
+          )}
         </div>
       </div>
 
@@ -192,12 +267,20 @@ export function ContributionsChart() {
                   tooltipText += " - No activity";
                 }
 
+                const isSelected = selectedDates.has(entry.date);
+                const isClickable = isSelectionMode && !hasWorkout;
+
                 return (
                   <div
                     key={entry.date}
+                    onClick={() => isClickable && handleSquareClick(entry)}
                     className={`w-3 h-3 rounded ${getSquareColor(
                       hasWorkout
-                    )} ${getSquareBorder(hasDailyExercise)} transition-colors cursor-pointer`}
+                    )} ${getSquareBorder(hasDailyExercise)} transition-colors ${
+                      isClickable ? "cursor-pointer hover:ring-2 hover:ring-white/50" : "cursor-default"
+                    } ${
+                      isSelected ? "ring-2 ring-blue-400 ring-offset-1 ring-offset-transparent" : ""
+                    }`}
                     title={tooltipText}
                   />
                 );
