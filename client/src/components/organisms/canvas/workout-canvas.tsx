@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
 
-import { WorkoutStreak } from "../../../modules/workout/components/organisms/workout-streak";
 import { ContributionsChart } from "../../../modules/workout/components/organisms/contributions-chart";
 import { SpotifyNowPlayingCard } from "../../../modules/spotify/components/organisms/spotify-now-playing";
 
@@ -55,7 +54,7 @@ export function WorkoutCanvas() {
           </section>
 
           <section className="h-full">
-            <WorkoutStreak />
+            {/* Right column - available for future components */}
           </section>
         </div>
 
