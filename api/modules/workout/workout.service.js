@@ -241,9 +241,10 @@ export async function getContributionsData() {
       has_class: false,
     };
 
-    if (entry.has_workout) {
-      totalWorkouts++;
-    }
+    // Count total number of workouts (weights, class, and dailies are separate workouts)
+    if (entry.has_weights) totalWorkouts++;
+    if (entry.has_class) totalWorkouts++;
+    if (entry.has_daily_exercise) totalWorkouts++;
 
     entries.push(entry);
     currentDate.setDate(currentDate.getDate() + 1);
