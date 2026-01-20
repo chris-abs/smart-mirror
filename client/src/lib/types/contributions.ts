@@ -14,30 +14,30 @@ export interface ContributionsChartData {
 }
 
 export interface ColorScheme {
-  level0: string; // No contributions
-  level1: string; // Low contributions
-  level2: string; // Medium contributions
-  level3: string; // High contributions
-  level4: string; // Very high contributions
+  level0: string;
+  level1: string;
+  level2: string;
+  level3: string;
+  level4: string;
   border: string;
 }
 
 export const COLOR_SCHEMES = {
   blue: {
-    level0: "bg-gray-600",
-    level1: "bg-blue-400",
-    level2: "bg-blue-500",
+    level0: "bg-neutral-900",
+    level1: "bg-blue-950",
+    level2: "bg-blue-800",
     level3: "bg-blue-600",
-    level4: "bg-blue-800",
-    border: "border-gray-500",
+    level4: "bg-blue-500",
+    border: "border-neutral-900/80",
   } as ColorScheme,
   green: {
-    level0: "bg-gray-600",
-    level1: "bg-green-500",
-    level2: "bg-green-600",
-    level3: "bg-green-700",
-    level4: "bg-green-800",
-    border: "border-gray-500",
+    level0: "bg-neutral-900",
+    level1: "bg-green-950",
+    level2: "bg-green-800",
+    level3: "bg-green-500",
+    level4: "bg-green-300",
+    border: "border-neutral-900/80",
   } as ColorScheme,
 };
 
