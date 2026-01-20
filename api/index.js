@@ -9,6 +9,8 @@ import newsRouter from "./modules/news/news.routes.js";
 // import hiveRouter from "./modules/hive/hive.routes.js"; // Disabled - node-hivehome not working
 import workoutRouter from "./modules/workout/workout.routes.js";
 import githubRouter from "./modules/github/github.routes.js";
+import { initializeWebSocket } from "./websocket/index.js";
+import { startSpotifyPolling } from "./services/spotify-polling.js";
 
 dotenv.config();
 const app = express();
@@ -46,6 +48,13 @@ testConnection()
     console.error("Database connection error:", err);
   });
 
-app.listen(PORT, () => {
+// Initialize WebSocket server
+const { httpServer } = initializeWebSocket(app);
+
+// Start polling services
+startSpotifyPolling();
+
+httpServer.listen(PORT, () => {
   console.log(`API listening on port ${PORT}`);
+  console.log(`WebSocket server ready`);
 });
