@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 
 import { WorkoutContributionsChart } from "../../../modules/workout/components/organisms/contributions-chart";
+import { WorkoutRecordButtons } from "../../../modules/workout/components/organisms/workout-record-buttons";
 import { SpotifyNowPlayingCard } from "../../../modules/spotify/components/organisms/spotify-now-playing";
 
 export function WorkoutCanvas() {
@@ -50,11 +51,11 @@ export function WorkoutCanvas() {
           </section>
 
           <section className="h-full">
-            {/* Center column - main workout content */}
+            {/* Center column - mirror reflection area */}
           </section>
 
-          <section className="h-full">
-            {/* Right column - available for future components */}
+          <section className="h-full flex items-start">
+            <WorkoutRecordButtons />
           </section>
         </div>
 

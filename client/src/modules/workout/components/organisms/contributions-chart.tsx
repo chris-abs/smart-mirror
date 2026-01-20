@@ -5,9 +5,8 @@ import {
   type ContributionLevel,
   type ContributionsChartData,
 } from "@/lib/types/contributions";
-import { useContributionsData, useRecordWorkoutType } from "../../queries";
+import { useContributionsData } from "../../queries";
 import type { WorkoutEntry } from "../../../../lib/types/workout";
-import { RecordWorkoutButton } from "../molecules/record-workout-button";
 
 function transformWorkoutEntryToContribution(entry: WorkoutEntry): ContributionEntry {
   const hasWeights = entry.has_weights || false;
@@ -63,46 +62,12 @@ function transformWorkoutData(
 
 export function WorkoutContributionsChart() {
   const { data, isLoading, error } = useContributionsData();
-  const recordWorkoutTypeMutation = useRecordWorkoutType();
 
   const transformedData = transformWorkoutData(data);
-
-  const handleRecordWorkoutType = (type: "weights" | "class" | "dailies") => {
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    const todayStr = today.toISOString().split("T")[0];
-
-    recordWorkoutTypeMutation.mutate({ dates: [todayStr], type });
-  };
-
-  const isPending = recordWorkoutTypeMutation.isPending;
 
   const title = transformedData
     ? `${transformedData.total.toLocaleString()} workout${transformedData.total !== 1 ? "s" : ""} over the last year`
     : "Workouts over the last year";
-
-  const actionButtons = (
-    <>
-      <RecordWorkoutButton
-        type="weights"
-        onClick={() => handleRecordWorkoutType("weights")}
-        disabled={isPending}
-        isPending={isPending}
-      />
-      <RecordWorkoutButton
-        type="class"
-        onClick={() => handleRecordWorkoutType("class")}
-        disabled={isPending}
-        isPending={isPending}
-      />
-      <RecordWorkoutButton
-        type="dailies"
-        onClick={() => handleRecordWorkoutType("dailies")}
-        disabled={isPending}
-        isPending={isPending}
-      />
-    </>
-  );
 
   return (
     <ContributionsChart
@@ -113,7 +78,6 @@ export function WorkoutContributionsChart() {
       colorScheme={COLOR_SCHEMES.blue}
       emptyMessage="No workout data available"
       legendLabel="(workouts per day)"
-      actionButtons={actionButtons}
       showLegend={true}
     />
   );

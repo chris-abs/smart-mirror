@@ -162,7 +162,7 @@ export function ContributionsChart({
             </div>
 
             <div className="flex gap-1 overflow-x-auto pb-2">
-              <div className="flex flex-col gap-1 pr-2 min-w-[40px]">
+              <div className="flex flex-col gap-1 pr-2 min-w-10">
                 {dayLabels.map((label, dayIndex) => (
                   <div
                     key={dayIndex}
@@ -197,7 +197,7 @@ export function ContributionsChart({
                     return (
                       <div
                         key={`${weekIndex}-${dayIndex}-${entry.date}`}
-                        className={`w-3 h-3 rounded ${getSquareColor(
+                        className={`w-3 h-3 rounded-[3px] ${getSquareColor(
                           entry.level,
                           colorScheme
                         )} border ${colorScheme.border} transition-colors`}
@@ -212,7 +212,7 @@ export function ContributionsChart({
         </div>
 
         {actionButtons && (
-          <div className="flex flex-col gap-3 min-w-[140px]">
+          <div className="flex flex-col gap-3 min-w-[140px] justify-end">
             {actionButtons}
           </div>
         )}
