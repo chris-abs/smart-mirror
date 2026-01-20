@@ -5,8 +5,8 @@ let pollingTimeout = null;
 let lastData = null;
 let isPolling = false;
 
-const POLL_INTERVAL_PLAYING = 2000;
-const POLL_INTERVAL_IDLE = 10000; 
+const POLL_INTERVAL_PLAYING = 1000; 
+const POLL_INTERVAL_IDLE = 5000; 
 
 async function pollAndBroadcast() {
   if (!isPolling) {
