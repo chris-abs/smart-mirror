@@ -22,6 +22,8 @@ services:
     build:
       context: ./api
       dockerfile: Dockerfile
+      args:
+        DEPS_HASH: ${API_DEPS_HASH:-default}
     container_name: smart-mirror-api
     environment:
       NODE_ENV: ${NODE_ENV:-development}
@@ -42,6 +44,8 @@ services:
     build:
       context: ./client
       dockerfile: Dockerfile
+      args:
+        DEPS_HASH: ${CLIENT_DEPS_HASH:-default}
     container_name: smart-mirror-client
     environment:
       VITE_API_BASE: http://localhost:3001

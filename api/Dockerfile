@@ -2,13 +2,14 @@ FROM node:20-alpine
 
 WORKDIR /app
 
-# Copy package files
+ARG DEPS_HASH=default
+
 COPY package.json yarn.lock ./
 
-# Install dependencies
-RUN yarn install
+RUN --mount=type=cache,target=/usr/local/share/.cache/yarn \
+    echo "Installing dependencies (hash: ${DEPS_HASH})" && \
+    yarn install --frozen-lockfile
 
-# Copy application code
 COPY . .
 
 # Expose port
